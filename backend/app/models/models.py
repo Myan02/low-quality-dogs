@@ -23,8 +23,8 @@ class DogEdit(DogBase):
 # Returning a dog
 class DogReturn(DogBase):
     id: Annotated[int, Field(title="Dog ID", description="ID of the dog image")]
+    owner_id: Annotated[int, Field(title="Owner ID", description="Id of the dog's owner")]
     created_at: Annotated[datetime, Field(title="Timestamp of image upload")]
-    status: Annotated[str | None, Field(title="Operation status")] = None
 
 
 """

@@ -4,9 +4,9 @@
 def InsertDog() -> str:
     return (
         """
-            INSERT INTO dogs (name, age)
-            VALUES (:name, :age)
-            RETURNING id, name, age, created_at;
+            INSERT INTO dogs (name, age, owner_id)
+            VALUES (:name, :age, :owner_id)
+            RETURNING id, name, age, owner_id, created_at;
         """
     )
 

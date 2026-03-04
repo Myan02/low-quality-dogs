@@ -17,8 +17,8 @@ router = APIRouter(prefix="/dogs", tags=["dogs"])
 #   2. inserts information about the dog into the db
 #   3. uploads the dog into the static/images directory
 """
-@router.post("/", response_model=models.DogReturn, status_code=status.HTTP_201_CREATED, dependencies=[Depends(get_current_user)])
-async def UploadDog(form_data: Annotated[models.DogCreate, Depends()]) -> dict:
+@router.post("/", response_model=models.DogReturn, status_code=status.HTTP_201_CREATED)
+async def UploadDog(form_data: Annotated[models.DogCreate, Depends()], current_user: Annotated[models.UserReturn, Depends(get_current_user)]) -> dict:
     
     try:
         # unpack values
@@ -27,23 +27,18 @@ async def UploadDog(form_data: Annotated[models.DogCreate, Depends()]) -> dict:
         # insert into db, get the id to concat with the image path
         with db.db_session() as conn:
             img_record = conn.execute(
-                queries.InsertDog(), {"name": name, "age": age}
+                queries.InsertDog(), {"name": name, "age": age, "owner_id": current_user.id}
             ).fetchone()
         
         # compress and save video 
         # return: returns a dict if successfull or raise HTTP exception
-        process_status = await CompressImage(id=img_record[0], name=name, image=image)
+        await CompressImage(id=img_record[0], name=name, image=image)
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Something went wrong uploading your dog :/ error: {e}")
 
-    return {
-        "id": img_record[0], 
-        "name": img_record[1], 
-        "age": img_record[2], 
-        "created_at": img_record[3],
-        "status": process_status["status"]
-    }
+    return models.DogReturn(**dict(img_record))
+
 
 """
 # This endpoint will retrieve EVERY DOG!

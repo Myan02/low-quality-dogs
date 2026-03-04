@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta
 from typing import Annotated, Any
 
 from fastapi import APIRouter, HTTPException, Depends, status, Form
@@ -18,7 +18,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 # Authentication dependency, decodes the jwt token 
 # provided by the client and makes sure the signature is correct
 """
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> models.UserReturn:
 
     try:
         # decode jwt token and check username 
@@ -45,8 +45,8 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
         
     except:
         raise credentials_exception()
-    
-    return user
+
+    return models.UserReturn(**user)
 
 
 """
