@@ -56,16 +56,20 @@ def create_access_token(payload: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 def authenticate_user(username: str, password: str):
+    
     with db.db_session() as conn:
         user = conn.execute(
             queries.GetUserByUsername(), {"username": username}
-        ).fetchone()
+        ).fetchone()    
 
     if not user:
-        verify_password(password, Settings.DUMMY_KEY)
+        dummy_hash = get_password_hash(Settings.DUMMY_KEY)
+        verify_password(password, dummy_hash)
         return False
+    
     if not verify_password(password, user["hashed_password"]):
         return False
+    
     return user
 
 
