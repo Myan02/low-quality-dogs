@@ -23,6 +23,13 @@ async def UploadDog(
     current_user: Annotated[models.UserReturn, Depends(get_current_user)]
 ) -> Any:
     
+    # Raise exception if incorrect file type
+    if DirPath(form_data.image.filename).suffix not in Settings.ACCEPTABLE_FORMATS:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Use one of the supported file types."
+        )
+    
     try:    
         # insert into db, get the id to concat with the image path
         with db.db_session() as conn:
