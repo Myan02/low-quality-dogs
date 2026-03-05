@@ -84,29 +84,40 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> m
 @router.post("/signup", response_model=models.UserReturn)
 def register_user(user_data: Annotated[models.UserCreate, Form()]) -> Any:
     
-    # Get form data from user
-    username, is_active, is_superuser, password = user_data.model_dump().values()
-    
-    # Check db if user exists
-    with db.db_session() as conn:
-        user = conn.execute(
-            queries.GetUserByUsername(), {"username": username}
-        ).fetchone()
+    try:
+        # Check db if user exists
+        with db.db_session() as conn:
+            user = conn.execute(
+                queries.GetUserByUsername(), {"username": user_data.username}
+            ).fetchone()
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail=f"Something went wrong on our end, error: {e}"
+        )
     
     if user:
         raise HTTPException(
-            status_code=400,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="A user with this username already exists."
         )
 
     # hash password
-    hashed_password = get_password_hash(password)
+    hashed_password = get_password_hash(user_data.password)
 
-    # commit credentials to db with hashed password
-    with db.db_session() as conn:
-        new_user = conn.execute(
-            queries.CreateUser(), {"username": username, "hashed_password": hashed_password}
-        ).fetchone()
+    try:
+        # commit credentials to db with hashed password
+        with db.db_session() as conn:
+            new_user = conn.execute(
+                queries.CreateUser(), {"username": user_data.username, "hashed_password": hashed_password}
+            ).fetchone()
+    
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail=f"Something went wrong on our end, error: {e}"
+        )
 
-    return dict(new_user)
+    return models.UserReturn(**dict(new_user))
 

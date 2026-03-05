@@ -32,16 +32,20 @@ class DogReturn(DogBase):
 """
 class UserBase(BaseModel):
     username: Annotated[str, Field(title="Username", description="Username to identify user", min_length=1, max_length=64)]
-    is_active: Annotated[bool, Field(title="User activity", description="Status of user account")] = True
-    is_superuser: Annotated[bool, Field(title="Admin Privelege", description="User admin privelege")] = False
-
+    
 # Creating a user
 class UserCreate(UserBase):
     password: Annotated[str, Field(title="User password", description="User password", min_length=8, max_length=128)]
 
+class SuperUserCreate(UserBase):
+    is_active: Annotated[bool, Field(title="User activity", description="Status of user account")] = True
+    is_superuser: Annotated[bool, Field(title="Admin Privelege", description="User admin privelege")] = False
+
 # Returning user info
 class UserReturn(UserBase):
     id: Annotated[int, Field(title="User ID", description="ID of the user")]
+    is_active: Annotated[bool, Field(title="User activity", description="Status of user account")] = True
+    is_superuser: Annotated[bool, Field(title="Admin Privelege", description="User admin privelege")] = False
     hashed_password: Annotated[str, Field(title="User hashed password", description="Hashed password for user", min_length=8, max_length=128)]
     created_at: Annotated[datetime, Field(title="Timestamp of user account creation")]
 
