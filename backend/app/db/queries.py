@@ -13,7 +13,9 @@ def InsertDog() -> str:
 def GetAllDogs() -> str:
     query = """
         SELECT *
-        FROM dogs;
+        FROM dogs
+        ORDER BY created_at DESC
+        LIMIT :limit OFFSET :offset;
     """
 
     return query
@@ -22,8 +24,7 @@ def GetDog() -> str:
     query = """
         SELECT *
         FROM dogs
-        WHERE id = :id
-        ORDER BY name ASC;
+        WHERE id = :id;
     """
 
     return query

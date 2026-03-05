@@ -1,7 +1,7 @@
 from typing import Annotated, Any
 from pathlib import Path as DirPath
 
-from fastapi import APIRouter, HTTPException, Path, Depends, status
+from fastapi import APIRouter, HTTPException, Path, Depends, status, Query
 
 from app.api.auth import get_current_user
 from app.db import db, queries
@@ -53,11 +53,17 @@ async def UploadDog(
 # This endpoint will retrieve EVERY DOG!
 """
 @router.get("/", response_model=list[models.DogReturn])
-def GetAllDogs() -> list[dict]:
+def GetAllDogs(
+    offset: Annotated[int, Query(description="Number of rows to skip", ge=0)],
+    limit: Annotated[int, Query(description="Number of rows to show", ge=1, le=100)] = 20
+) -> list[dict]:
     try:
         with db.db_session() as conn:
             rows = conn.execute(
-                queries.GetAllDogs(),
+                queries.GetAllDogs(), {
+                    "offset": offset * limit,
+                    "limit": limit
+                }
             ).fetchall()
     
     except Exception as e:
