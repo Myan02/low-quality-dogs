@@ -7,11 +7,11 @@ router = APIRouter(prefix="/health", tags=["health"])
 def CheckHealth() -> dict:
     with db.db_session() as conn:
         check = conn.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name='dogs';"
-        ).fetchone()
+            "SELECT name FROM sqlite_master WHERE type='table';"
+        ).fetchall()
     
     return {
         "Server Status": "OK",
-        "Check": dict(check)
+        "Check": [dict(table) for table in check]
     }
     

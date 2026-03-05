@@ -35,7 +35,7 @@ def UpdateDog(update_name: str | None = None, update_age: str | None = None) -> 
                 UPDATE dogs
                 SET name = :new_name, age = :new_age
                 WHERE id = :id
-                RETURNING id, name, age, created_at;
+                RETURNING id, name, age, owner_id, created_at;
             """
         )
 
@@ -45,7 +45,7 @@ def UpdateDog(update_name: str | None = None, update_age: str | None = None) -> 
                 UPDATE dogs
                 SET name = :new_name
                 WHERE id = :id
-                RETURNING id, name, age, created_at;
+                RETURNING id, name, age, owner_id, created_at;
             """
         )
 
@@ -55,7 +55,7 @@ def UpdateDog(update_name: str | None = None, update_age: str | None = None) -> 
                 UPDATE dogs
                 SET age = :new_age
                 WHERE id = :id
-                RETURNING id, name, age, created_at;
+                RETURNING id, name, age, owner_id, created_at;
             """
         )
 
@@ -64,7 +64,7 @@ def DeleteDog() -> str:
         """
             DELETE FROM dogs
             WHERE id = :id
-            RETURNING id, name, age, created_at;
+            RETURNING id, name, age, owner_id, created_at;
         """
     )
 

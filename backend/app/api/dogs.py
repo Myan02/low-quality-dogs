@@ -20,24 +20,23 @@ router = APIRouter(prefix="/dogs", tags=["dogs"])
 @router.post("/", response_model=models.DogReturn, status_code=status.HTTP_201_CREATED)
 async def UploadDog(form_data: Annotated[models.DogCreate, Depends()], current_user: Annotated[models.UserReturn, Depends(get_current_user)]) -> dict:
     
-    try:
-        # unpack values
-        name, age, image = form_data.model_dump().values()
-    
+    try:    
         # insert into db, get the id to concat with the image path
         with db.db_session() as conn:
             img_record = conn.execute(
-                queries.InsertDog(), {"name": name, "age": age, "owner_id": current_user.id}
+                queries.InsertDog(), {"name": form_data.name, "age": form_data.age, "owner_id": current_user.id}
             ).fetchone()
         
+        dog = models.DogReturn(**dict(img_record))
+        
         # compress and save video 
-        # return: returns a dict if successfull or raise HTTP exception
-        await CompressImage(id=img_record[0], name=name, image=image)
+        # returns a dict if successfull or raise HTTP exception
+        await CompressImage(id=dog.id, name=dog.name, image=form_data.image)
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Something went wrong uploading your dog :/ error: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Something went wrong uploading your dog, error: {e}")
 
-    return models.DogReturn(**dict(img_record))
+    return dog
 
 
 """
@@ -45,7 +44,6 @@ async def UploadDog(form_data: Annotated[models.DogCreate, Depends()], current_u
 """
 @router.get("/", response_model=list[models.DogReturn])
 def GetAllDogs() -> list[dict]:
-
     try:
         with db.db_session() as conn:
             rows = conn.execute(
@@ -53,7 +51,7 @@ def GetAllDogs() -> list[dict]:
             ).fetchall()
     
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Something went wrong getting your dogs T_T error: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Something went wrong on our end, error: {e}")
     
     return [dict(row) for row in rows]
 
@@ -63,110 +61,117 @@ def GetAllDogs() -> list[dict]:
 """
 @router.get("/{id}", response_model=models.DogReturn)
 def GetDogById(id: Annotated[int, Path(description="The id of your dog to retrieve", gt=0)]) -> dict:
-    
     try:
         with db.db_session() as conn:
             row = conn.execute(
                 queries.GetDog(), {"id": id}
             ).fetchone()
 
-            if not row:
-                raise HTTPException(status_code=500, detail=f"This dog does not exist :/")
-
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Something went wrong getting your single dog boo, error: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Something went wrong on our end, error: {e}")
 
-    return {
-        "id": row[0], 
-        "name": row[1], 
-        "age": row[2], 
-        "created_at": row[3],
-        "status": "Dog retrieved successfully!"
-    }
+    if not row:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"This dog does not exist")
+
+    return models.DogReturn(**dict(row))
 
 """
 # This endpoint will update a dog by id!
 """
-@router.patch("/{id}", response_model=models.DogReturn, dependencies=[Depends(get_current_user)])
+@router.patch("/{id}", response_model=models.DogReturn)
 async def EditDog(
     id: Annotated[int, Path(description="The id of your dog to retrieve", gt=0)], 
-    form_data: Annotated[models.DogEdit, Depends()]
+    form_data: Annotated[models.DogEdit, Depends()],
+    current_user: Annotated[models.UserReturn, Depends(get_current_user)]
 ) -> dict:
     try:
-        # check if the dog to edit exists
+        # check if the dog exists
         with db.db_session() as conn:
             row = conn.execute(
                 queries.GetDog(), {"id": id}
             ).fetchone()
-        
-        if not row:
-            raise HTTPException(status_code=500, detail=f"This dog does not exist :/")
 
-        # unpack values
-        name, age, image = form_data.model_dump().values()
-        process_status = None
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Something went wrong on our end, error: {e}")
 
-        # rename image 
-        if name:
-            img_path = DirPath(f"{Directories.LOCAL_IMAGE_DIR}/{row[1]}_{row[0]}.{Settings.IMG_FORMAT.lower()}")
-            img_path.rename(DirPath(f"{Directories.LOCAL_IMAGE_DIR}/{name}_{row[0]}.{Settings.IMG_FORMAT.lower()}"))
+    if not row:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"This dog does not exist.")
 
+    dog = models.DogReturn(**dict(row))
+
+    # authenticate user to edit their images
+    if dog.owner_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="You are not authorized to edit this image as it is not yours.")
+
+    # rename image 
+    if form_data.name:
+        img_path = DirPath(f"{Directories.LOCAL_IMAGE_DIR}/{dog.name}_{dog.id}.{Settings.IMG_FORMAT.lower()}")
+        img_path.rename(DirPath(f"{Directories.LOCAL_IMAGE_DIR}/{form_data.name}_{dog.id}.{Settings.IMG_FORMAT.lower()}"))
+
+    try:
         # update db with new name or new age
-        if name or age:
+        if form_data.name or form_data.age:
             with db.db_session() as conn:
                 row = conn.execute(
-                    queries.UpdateDog(update_name=name, update_age=age), {"id": id, "new_name": name, "new_age": age}
+                    queries.UpdateDog(update_name=form_data.name, update_age=form_data.age), {"id": id, "new_name": form_data.name, "new_age": form_data.age}
                 ).fetchone()
-        
+                
         # compress new uploaded image and replace old image
-        if image:
-            process_status = await CompressImage(id=id, name=row[1], image=image)
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"something went wrong: {e}")
+        if form_data.image:
+            await CompressImage(id=id, name=form_data.name, image=form_data.image)
     
-    return {
-        "id": row[0], 
-        "name": row[1], 
-        "age": row[2], 
-        "created_at": row[3],
-        "status": f"Dog edited successfully, {process_status["status"] if process_status else "no new images uploaded!"}"
-    }
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Something went wrong on our end, error: {e}")
+
+    return models.DogReturn(**dict(row))
     
 
 """
 # This endpoint will delete a dog from the db and directory through its id
 """
-@router.delete("/{id}", response_model=models.DogReturn, dependencies=[Depends(get_current_user)])
-def DeleteDog(id: Annotated[int, Path(description="The id of the dog you want to delete :(", gt=0)]) -> dict:
+@router.delete("/{id}", response_model=models.DogReturn)
+def DeleteDog(
+    id: Annotated[int, Path(description="The id of the dog you want to delete", gt=0)],
+    current_user: Annotated[models.UserReturn, Depends(get_current_user)]
+) -> dict:
     
+    try:
+        # check if the dog exists
+        with db.db_session() as conn:
+            row = conn.execute(
+                queries.GetDog(), {"id": id}
+            ).fetchone()
+
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Something went wrong on our end, error: {e}")
+    
+    if not row:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"This dog does not exist.")
+    
+    dog = models.DogReturn(**dict(row))
+
+    # authenticate user to delete their images
+    if dog.owner_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="You are not authorized to delete this image as it is not yours.")
+            
     try:
         # delete from db, return the deleted dogs id
         with db.db_session() as conn:
             row = conn.execute(
                 queries.DeleteDog(), {"id": id}
             ).fetchone()
-                
-        # get the dog image path given the deleted id
-        img_path = DirPath(f"{Directories.LOCAL_IMAGE_DIR}/{row[1]}_{id}.{Settings.IMG_FORMAT.lower()}")
-
-        # raise exception if the image doesnt exist somehow
-        if not img_path.exists():
-            raise HTTPException(status_code=400, detail="The file you are trying to delete does not exist :3")
-        
-        # delete image
-        img_path.unlink()
     
-    except TypeError:
-        raise HTTPException(status_code=400, detail="The file you are trying to delete does not exist :3")
-
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Something went wrong deleting your dog omg, error: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Something went wrong on our end, error: {e}")
     
-    return {
-        "id": row[0], 
-        "name": row[1], 
-        "age": row[2], 
-        "created_at": row[3],
-        "status": "Dog deleted successfully!"
-    }
+    # get the dog image path given the deleted id
+    img_path = DirPath(f"{Directories.LOCAL_IMAGE_DIR}/{dog.name}_{id}.{Settings.IMG_FORMAT.lower()}")
+
+    # raise exception if the image doesnt exist somehow
+    if not img_path.exists():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="The file you are trying to delete does not exist.")
+    
+    # delete image
+    img_path.unlink()
+
+    return models.DogReturn(**dict(row))

@@ -30,7 +30,7 @@ async def CompressImage(id: int, name: str, image: UploadFile) -> dict:
             )
     
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Something went wrong processing your image, error code: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Something went wrong processing your image, error code: {e}")
     
     return {"status": "Image processed successfully!"}
 
