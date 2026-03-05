@@ -1,6 +1,7 @@
 import uvicorn
 from fastapi import FastAPI, Depends
 from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 
 from app.api import dogs, health, auth
 from app.config import Settings, Directories
@@ -15,6 +16,12 @@ def InitApp() -> FastAPI:
     # create and initialize dogs directory
     if not Directories.LOCAL_IMAGE_DIR.exists():
         Directories.LOCAL_IMAGE_DIR.mkdir(parents=True)
+    
+    # create db if it doesn't exist
+    DB_PATH = Path(Directories.DB_DIR/Directories.DB_NAME)
+
+    if not DB_PATH.exists():
+        DB_PATH.touch()
     
     # create app instance
     app = FastAPI(
