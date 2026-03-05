@@ -125,7 +125,7 @@ async def EditDog(
     dog = models.DogReturn(**dict(row))
 
     # authenticate user to edit their images
-    if dog.owner_id != current_user.id:
+    if not current_user.is_superuser and dog.owner_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, 
             detail="You are not authorized to edit this image as it is not yours."
@@ -150,10 +150,12 @@ async def EditDog(
                         "new_age": form_data.age
                     }
                 ).fetchone()
+        
+        dog = models.DogReturn(**dict(row))
 
         # compress new uploaded image and replace old image
         if form_data.image:
-            await CompressImage(id=id, name=form_data.name, image=form_data.image)
+            await CompressImage(id=id, name=dog.name, image=form_data.image)
     
     except Exception as e:
         raise HTTPException(
@@ -161,7 +163,7 @@ async def EditDog(
             detail=f"Something went wrong on our end, error: {e}"
         )
 
-    return models.DogReturn(**dict(row))
+    return dog
     
 
 """
@@ -195,7 +197,7 @@ def DeleteDog(
     dog = models.DogReturn(**dict(row))
 
     # authenticate user to delete their images
-    if dog.owner_id != current_user.id:
+    if not current_user.is_superuser and dog.owner_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, 
             detail="You are not authorized to delete this image as it is not yours."

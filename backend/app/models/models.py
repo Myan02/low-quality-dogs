@@ -38,7 +38,8 @@ class UserCreate(UserBase):
     password: Annotated[str, Field(title="User password", description="User password", min_length=8, max_length=128)]
 
 class SuperUserCreate(UserBase):
-    is_active: Annotated[bool, Field(title="User activity", description="Status of user account")] = True
+    password: Annotated[str, Field(title="Superuser password", description="Superuser password", min_length=8, max_length=128)]
+    is_active: Annotated[bool, Field(title="Superuser activity", description="Status of superuser account")] = True
     is_superuser: Annotated[bool, Field(title="Admin Privelege", description="User admin privelege")] = False
 
 # Returning user info

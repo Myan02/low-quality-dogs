@@ -23,6 +23,8 @@ class Settings():
     ACCESS_TOKEN_EXPIRE_MINUTES=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
     IMG_SIZE = int(os.getenv("IMG_SIZE"))
     IMG_FORMAT = os.getenv("IMG_FORMAT")
+    SUPER_USERNAME = os.getenv("SUPER_USERNAME")
+    SUPER_PASSWORD = os.getenv("SUPER_PASSWORD")
 
 
 """
