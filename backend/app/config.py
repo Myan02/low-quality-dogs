@@ -17,13 +17,17 @@ class Settings():
     PORT = int(os.getenv("PORT"))
     HOST = os.getenv("HOST")
     APP_RELOAD = bool(os.getenv("APP_RELOAD"))
+
+    BACKEND_CORS_ORIGINS = os.getenv("BACKEND_CORS_ORIGINS").split(",")
     SECRET_KEY = os.getenv("SECRET_KEY")
     DUMMY_KEY = os.getenv("DUMMY_KEY")
     ALGORITHM = os.getenv("ALGORITHM")
-    ACCESS_TOKEN_EXPIRE_MINUTES=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+    ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+
     IMG_SIZE = int(os.getenv("IMG_SIZE"))
     IMG_FORMAT = os.getenv("IMG_FORMAT")
     ACCEPTABLE_FORMATS = set(os.getenv("ACCEPTABLE_FORMATS").split(","))
+
     SUPER_USERNAME = os.getenv("SUPER_USERNAME")
     SUPER_PASSWORD = os.getenv("SUPER_PASSWORD")
 

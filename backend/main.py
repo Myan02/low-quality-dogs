@@ -1,6 +1,6 @@
-import uvicorn
 from fastapi import FastAPI, Depends
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 
 from app.api import dogs, health, auth
@@ -58,6 +58,15 @@ def InitApp() -> FastAPI:
     app.include_router(dogs.router)
     app.include_router(health.router)
     app.include_router(auth.router)
+
+    # set all CORS enabled origins
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=Settings.BACKEND_CORS_ORIGINS,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     
     return app
 
@@ -70,6 +79,8 @@ app = InitApp()
 # Start server
 """
 if __name__ == "__main__":
+    import uvicorn
+
     uvicorn.run(
         app=Settings.APP,
         host=Settings.HOST,
