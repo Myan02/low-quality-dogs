@@ -1,26 +1,6 @@
-/**
- * 
- * context/AuthContext.tsx
- * 
- * AuthContext gives all components access to auth states 
- * without passing props down manually. All componenets get
- * access to:
- * - useAuth()
- * - loginUser()
- * - logoutUser()
- * 
- */
+import { createContext, useContext, useState, type ReactNode } from 'react';
+import type { User } from '../types/models';
 
-import {
-    createContext,
-    useContext,
-    useState,
-    useEffect,
-    type ReactNode
-} from "react";
-import type { User } from "../types/models";
-
-// ----- CONTEXT SCHEMA -----
 interface AuthContextValue {
     user: User | null;
     token: string | null;
@@ -29,7 +9,6 @@ interface AuthContextValue {
     logoutUser: () => void;
 }
 
-// ----- CREATE CONTEXT WITH EMPTY VALUES -----
 const AuthContext = createContext<AuthContextValue>({
     user: null,
     token: null,
@@ -38,10 +17,8 @@ const AuthContext = createContext<AuthContextValue>({
     logoutUser: () => { },
 });
 
-// ----- PROVIDER COMPONENT -----
 export function AuthProvider({ children }: { children: ReactNode }) {
-
-    // first, try to restore session from local storage on first render
+    // Restore session from localStorage on first render
     const [token, setToken] = useState<string | null>(
         () => localStorage.getItem('access_token')
     );
@@ -50,24 +27,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return stored ? (JSON.parse(stored) as User) : null;
     });
 
-    // when token or user change/update, keep localStorage in sync
-    useEffect(() => {
-        if (token) localStorage.setItem('access_token', token);
-        else localStorage.removeItem('access_token');
-    }, [token]);
-
-    useEffect(() => {
-        if (user) localStorage.setItem('user', JSON.stringify(user));
-        else localStorage.removeItem('user');
-    }, [user]);
-
-    // Handle login and logout
     function loginUser(newToken: string, newUser: User) {
+        // Write to localStorage SYNCHRONOUSLY before setting React state.
+        // The Axios interceptor reads from localStorage on every request —
+        // if we rely on useEffect to sync it, the effect runs after the next
+        // render and the token won't be there in time for an immediate request.
+        localStorage.setItem('access_token', newToken);
+        localStorage.setItem('user', JSON.stringify(newUser));
         setToken(newToken);
         setUser(newUser);
     }
 
     function logoutUser() {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('user');
         setToken(null);
         setUser(null);
     }
@@ -81,7 +54,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 }
 
-// ----- CUSTOM HOOM, EASY USE IN COMPONENETS -----
 export function useAuth() {
     return useContext(AuthContext);
 }

@@ -21,10 +21,15 @@ interface DogCardProps {
 function resolveImageUrl(imagePath: string | null): string | null {
     if (!imagePath) return null;
 
-    if (imagePath.startsWith('http')) return imagePath;
+    // Normalize backslashes (Windows paths) to forward slashes
+    const normalized = imagePath.replace(/\\/g, '/');
 
-    // prepend a slash so vite's proxy can handle it
-    return '/' + imagePath.replace(/\\/g, '/');
+    // Extract just the filename (e.g. "elster_2.jpeg") regardless of
+    // what directory prefix the backend stored, then serve via /images/
+    const filename = normalized.split('/').pop();
+    if (!filename) return null;
+
+    return `/images/${filename}`;
 }
 
 export default function DogCard({ dog, onEdit, onDelete }: DogCardProps) {

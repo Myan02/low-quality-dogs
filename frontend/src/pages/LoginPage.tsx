@@ -1,22 +1,10 @@
-/**
- * pages/LoginPage.tsx
- *
- * The login form. On success:
- *  1. We get back a JWT token from the backend
- *  2. We store it via the loginUser() context function
- *  3. We redirect the user to the home page
- *
- * Note: We don't get the user object back from /auth/login — just the token.
- * So we create a minimal User object from the username the user typed.
- * (A more complete app might call GET /users/me to get the full user.)
- */
-
-import { useState, type SubmitEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../api/auth';
+import apiClient from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import type { AxiosError } from 'axios';
-import type { ApiError } from '../types/models';
+import type { ApiError, User } from '../types/models';
 import '../styles/pages.css';
 import '../styles/components.css';
 
@@ -29,24 +17,29 @@ export default function LoginPage() {
     const { loginUser } = useAuth();
     const navigate = useNavigate();
 
-    async function handleSubmit(e: SubmitEvent) {
+    async function handleSubmit(e: FormEvent) {
         e.preventDefault();
         setLoading(true);
         setError(null);
 
         try {
+            // Step 1: get the JWT
             const tokenData = await login({ username, password });
 
-            // Store the token + a user object
-            // We use the typed username since the backend doesn't return user info on login
-            loginUser(tokenData.access_token, {
-                id: 0,
-                username,
-                is_superuser: false,
-            });
+            // Step 2: store token in localStorage immediately so the next
+            // request has it available in the Axios interceptor
+            localStorage.setItem('access_token', tokenData.access_token);
+
+            // Step 3: fetch the real user record (requires the token just stored)
+            // This gives us the correct id and is_superuser flag
+            const me = await apiClient.get<User>('/auth/me');
+
+            // Step 4: hand off to context (also writes to localStorage)
+            loginUser(tokenData.access_token, me.data);
 
             navigate('/');
         } catch (err) {
+            localStorage.removeItem('access_token');
             const axiosErr = err as AxiosError<ApiError>;
             setError(axiosErr.response?.data?.detail ?? 'Login failed. Check your credentials.');
         } finally {

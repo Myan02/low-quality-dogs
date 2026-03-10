@@ -17,7 +17,7 @@ import type {
  * Returns a paginated list of all dogs.
  */
 export async function getAllDogs(params: DogListParams): Promise<Dog[]> {
-    const { data } = await apiClient.get<Dog[]>('/dogs', { params });
+    const { data } = await apiClient.get<Dog[]>('/dogs/', { params });
     return data;
 }
 
@@ -51,7 +51,7 @@ export async function uploadDog(form: DogCreateForm): Promise<Dog> {
     formData.append('description', form.description);
     formData.append('image', form.image);
 
-    const { data } = await apiClient.post<Dog>('/dogs', formData);
+    const { data } = await apiClient.post<Dog>('/dogs/', formData);
     return data;
 }
 

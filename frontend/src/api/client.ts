@@ -9,9 +9,6 @@ import axios from "axios";
 
 const apiClient = axios.create({
     baseURL: '/',   // Vite will forward /dogs and /auth to backend
-    headers: {
-        'Content-Type': 'application/json',
-    },
 });
 
 // ----- REQUEST INTERCEPTOR -----
@@ -22,6 +19,8 @@ apiClient.interceptors.request.use((config) => {
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
+    console.log('[API]', config.method?.toUpperCase(), config.url);
+    console.log('[API] Authorization header:', config.headers.Authorization ?? 'NOT SET');
     return config;
 });
 
