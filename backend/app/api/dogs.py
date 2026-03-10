@@ -190,16 +190,18 @@ async def EditDog(
 
     try:
         # update db with new name or new age
-        if form_data.name or form_data.age:
+        if form_data.name or form_data.age or form_data.description:
             with db.db_session() as conn:
                 row = conn.execute(
                     queries.UpdateDog(
-                        update_name=form_data.name, 
-                        update_age=form_data.age
+                        name_flag=bool(form_data.name), 
+                        age_flag=bool(form_data.age),
+                        description_flag=bool(form_data.description)
                     ), {
                         "id": id, 
-                        "new_name": form_data.name, 
-                        "new_age": form_data.age
+                        "name": form_data.name, 
+                        "age": form_data.age,
+                        "description": form_data.description,
                     }
                 ).fetchone()
         

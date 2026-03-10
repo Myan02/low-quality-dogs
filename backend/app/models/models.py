@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 """
 class DogBase(BaseModel):    
     name: Annotated[str, Field(title="Dog Name", description="The name of your dog.", min_length=1, max_length=128)]
-    age: Annotated[str, Field(title="Dog Age", description="Your dog's age.", min_length=1, max_length=2)]
+    age: Annotated[int, Field(title="Dog Age", description="Your dog's age.", ge=0, le=99)]
     description: Annotated[str, Field(title="Dog Description", description="A short description of your dog.", max_length=250)]
 
 # Creating a dog
@@ -19,6 +19,7 @@ class DogCreate(DogBase):
 class DogEdit(DogBase):
     name: Annotated[str | None, Field(title="Dog Name Edit", description="The new name of your dog", min_length=1, max_length=128)] = None
     age: Annotated[int | None, Field(title="Dog Age Edit", description="The new age of your dog", ge=0, lt=50)] = None
+    description: Annotated[str | None, Field(title="Dog Description Edit", description="The new description of your dog", max_length=250)] = None
     image: Annotated[UploadFile | None, Field(title="Dog Image File Edit", description="The new image file for your dog")] = None
 
 # Returning a dog
