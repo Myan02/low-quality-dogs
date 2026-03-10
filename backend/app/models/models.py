@@ -8,8 +8,9 @@ from pydantic import BaseModel, Field
 # DOG MODELS
 """
 class DogBase(BaseModel):    
-    name: Annotated[str, Field(title="Dog Name", description="The name of your dog", min_length=1, max_length=128)]
-    age: Annotated[int, Field(title="Dog Age", description="Your dog's age", ge=0, lt=50)]
+    name: Annotated[str, Field(title="Dog Name", description="The name of your dog.", min_length=1, max_length=128)]
+    age: Annotated[str, Field(title="Dog Age", description="Your dog's age.", min_length=1, max_length=2)]
+    description: Annotated[str, Field(title="Dog Description", description="A short description of your dog.", max_length=250)]
 
 # Creating a dog
 class DogCreate(DogBase):
@@ -23,7 +24,9 @@ class DogEdit(DogBase):
 # Returning a dog
 class DogReturn(DogBase):
     id: Annotated[int, Field(title="Dog ID", description="ID of the dog image")]
+    image_url: Annotated[str, Field(title="Image URL", description="Location of the image")]
     owner_id: Annotated[int, Field(title="Owner ID", description="Id of the dog's owner")]
+    owner_username: Annotated[str, Field(title="Owner Username", description="The name of the dog's owner")]
     created_at: Annotated[datetime, Field(title="Timestamp of image upload")]
 
 

@@ -3,11 +3,21 @@
 """
 def InsertDog() -> str:
     query = """
-        INSERT INTO dogs (name, age, owner_id)
-        VALUES (:name, :age, :owner_id)
-        RETURNING id, name, age, owner_id, created_at;
+        INSERT INTO dogs (name, age, description, owner_id, owner_username)
+        VALUES (:name, :age, :description, :owner_id, :owner_username)
+        RETURNING id, name, age, description, image_url, owner_id, owner_username, created_at;
     """
     
+    return query
+
+def UpdateImageUrl() -> str:
+    query = """
+        UPDATE dogs
+        SET image_url = :image_url
+        WHERE id = :id
+        RETURNING image_url;
+    """
+
     return query
 
 def GetAllDogs() -> str:
@@ -20,7 +30,7 @@ def GetAllDogs() -> str:
 
     return query
 
-def GetDog() -> str:
+def GetDogByID() -> str:
     query = """
         SELECT *
         FROM dogs
@@ -29,40 +39,40 @@ def GetDog() -> str:
 
     return query
 
-def UpdateDog(update_name: str | None = None, update_age: str | None = None) -> str:
-    query = ""
-    
-    if update_name and update_age:
-        query = """
-            UPDATE dogs
-            SET name = :new_name, age = :new_age
-            WHERE id = :id
-            RETURNING id, name, age, owner_id, created_at;
-        """
+def GetDogByName() -> str:
+    query = """
+        SELECT *
+        FROM dogs
+        WHERE name LIKE '%' || :name || '%';
+    """
 
-    elif update_name:
-        query = """
-            UPDATE dogs
-            SET name = :new_name
-            WHERE id = :id
-            RETURNING id, name, age, owner_id, created_at;
-        """
-
-    elif update_age:
-        query = """
-            UPDATE dogs
-            SET age = :new_age
-            WHERE id = :id
-            RETURNING id, name, age, owner_id, created_at;
-        """
-    
     return query
+
+def UpdateDog(name_flag: bool = False, age_flag: bool = False, description_flag: bool = False) -> str:
+    fields = []
+
+    if name_flag:
+        fields.append("name = :name")
+    if age_flag:
+        fields.append("age = :age")
+    if description_flag:
+        fields.append("description = :description")
+    
+    query = f"""
+        UPDATE dogs
+        SET {', '.join(fields)}
+        WHERE id = :id
+        RETURNING id, name, age, description, image_url, owner_id, owner_username, created_at;
+    """
+
+    return query
+
 
 def DeleteDog() -> str:
     query = """
         DELETE FROM dogs
         WHERE id = :id
-        RETURNING id, name, age, owner_id, created_at;
+        RETURNING id, name, age, description, image_url, owner_id, owner_username, created_at;
     """
     
     return query

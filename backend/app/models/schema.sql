@@ -1,9 +1,12 @@
 CREATE TABLE IF NOT EXISTS Dogs(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    age INTEGER NOT NULL,
+    age TEXT NOT NULL,
+    description TEXT NOT NULL,
+    image_url TEXT NOT NULL DEFAULT "PLACEHOLDER",
     owner_id INTEGER NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    owner_username TEXT NOT NULL,
+    created_at DATE DEFAULT CURRENT_DATE,
     FOREIGN KEY (owner_id) 
     REFERENCES Users (id)
         ON UPDATE CASCADE

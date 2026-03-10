@@ -37,15 +37,28 @@ async def UploadDog(
                 queries.InsertDog(), {
                     "name": form_data.name, 
                     "age": form_data.age, 
-                    "owner_id": current_user.id
+                    "description": form_data.description,
+                    "owner_id": current_user.id,
+                    "owner_username": current_user.username
                 }
             ).fetchone()
         
         dog = models.DogReturn(**dict(img_record))
-        
+
         # compress and save video 
         # returns a dict if successfull or raise HTTP exception
         await CompressImage(id=dog.id, name=dog.name, image=form_data.image)
+
+        # update the db entry with the proper image url
+        with db.db_session() as conn:
+            updated_record = conn.execute(
+                queries.UpdateImageUrl(), {
+                    "image_url": f"{Directories.LOCAL_IMAGE_DIR}/{dog.name}_{dog.id}.{Settings.IMG_FORMAT.lower()}",
+                    "id": dog.id,
+                }
+            ).fetchone()
+
+        dog.image_url = dict(updated_record)["image_url"]
         
     except Exception as e:
         raise HTTPException(
@@ -83,14 +96,39 @@ def GetAllDogs(
 
 
 """
+# This endpoing will retrieve all dogs with the same name
+"""
+@router.get("/name/{name}", response_model=list[models.DogReturn])
+def GetDogByName(name: Annotated[str, Path(description="The name of the dog to retrieve")]) -> Any:
+    try:
+        with db.db_session() as conn:
+            rows = conn.execute(
+                queries.GetDogByName(), {"name": name}
+            ).fetchall()
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail=f"Something went wrong on our end, error: {e}"
+        )
+    
+    if not rows:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail=f"No dog's have this name."
+        )
+
+    return [models.DogReturn(**dict(row)) for row in rows]
+
+"""
 # This endpoing will retrieve a dog by its id
 """
-@router.get("/{id}", response_model=models.DogReturn)
+@router.get("/id/{id}", response_model=models.DogReturn)
 def GetDogById(id: Annotated[int, Path(description="The id of your dog to retrieve", gt=0)]) -> Any:
     try:
         with db.db_session() as conn:
             row = conn.execute(
-                queries.GetDog(), {"id": id}
+                queries.GetDogByID(), {"id": id}
             ).fetchone()
 
     except Exception as e:
@@ -107,6 +145,7 @@ def GetDogById(id: Annotated[int, Path(description="The id of your dog to retrie
 
     return models.DogReturn(**dict(row))
 
+
 """
 # This endpoint will update a dog by id!
 """
@@ -120,7 +159,7 @@ async def EditDog(
         # check if the dog exists
         with db.db_session() as conn:
             row = conn.execute(
-                queries.GetDog(), {"id": id}
+                queries.GetDogByID(), {"id": id}
             ).fetchone()
 
     except Exception as e:
@@ -192,7 +231,7 @@ def DeleteDog(
         # check if the dog exists
         with db.db_session() as conn:
             row = conn.execute(
-                queries.GetDog(), {"id": id}
+                queries.GetDogByID(), {"id": id}
             ).fetchone()
 
     except Exception as e:
