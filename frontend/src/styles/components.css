@@ -1,0 +1,289 @@
+/* styles/components.css
+ * Shared styles for forms, modals, buttons, spinners, alerts.
+ */
+
+/* ── Modal overlay ──────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 26, 24, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: var(--space-5);
+  animation: fadeIn 0.2s ease;
+}
+
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  padding: var(--space-7);
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: fadeUp 0.25s ease;
+  position: relative;
+}
+
+.modal__close {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-faint);
+  font-size: 1.25rem;
+  transition: all var(--transition-fast);
+  background: transparent;
+}
+
+.modal__close:hover {
+  background: var(--cream);
+  color: var(--ink);
+}
+
+.modal__title {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: var(--space-5);
+}
+
+/* ── Forms ──────────────────────────────────────────────── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.form__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.form__label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.form__input,
+.form__textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-weight: 300;
+  color: var(--ink);
+  background: var(--warm-white);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  outline: none;
+}
+
+.form__input:focus,
+.form__textarea:focus {
+  border-color: var(--amber);
+  box-shadow: 0 0 0 3px rgba(200, 133, 42, 0.12);
+}
+
+.form__textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* File upload zone */
+.form__file-zone {
+  border: 2px dashed var(--border-dark);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  background: var(--cream);
+}
+
+.form__file-zone:hover {
+  border-color: var(--amber);
+  background: var(--amber-pale);
+}
+
+.form__file-zone--has-file {
+  border-color: var(--sage);
+  background: #F0F5F0;
+}
+
+.form__file-zone input[type="file"] {
+  display: none;
+}
+
+.form__file-icon {
+  font-size: 2rem;
+  margin-bottom: var(--space-2);
+}
+
+.form__file-label {
+  font-size: 0.875rem;
+  color: var(--ink-muted);
+}
+
+.form__file-label strong {
+  color: var(--amber);
+  font-weight: 500;
+}
+
+.form__file-name {
+  font-size: 0.8rem;
+  color: var(--sage);
+  margin-top: var(--space-1);
+}
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  border: none;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  background: var(--ink);
+  color: var(--cream);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--amber);
+}
+
+.btn--secondary {
+  background: var(--cream);
+  color: var(--ink);
+  border: 1.5px solid var(--border-dark);
+}
+
+.btn--secondary:hover:not(:disabled) {
+  background: var(--warm-white);
+  border-color: var(--ink-muted);
+}
+
+.btn--danger {
+  background: var(--rust);
+  color: white;
+}
+
+.btn--danger:hover:not(:disabled) {
+  background: #9A3820;
+}
+
+.btn--full {
+  width: 100%;
+}
+
+/* ── Spinner ─────────────────────────────────────────────── */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--amber);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+.spinner--lg {
+  width: 40px;
+  height: 40px;
+  border-width: 3px;
+}
+
+.spinner-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-9);
+}
+
+/* ── Alert / Error ───────────────────────────────────────── */
+.alert {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.alert--error {
+  background: #FEE9E7;
+  color: var(--rust);
+  border: 1px solid #FAC5BE;
+}
+
+.alert--success {
+  background: #EAF4EC;
+  color: var(--sage);
+  border: 1px solid #BDDEC2;
+}
+
+/* ── Empty state ─────────────────────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: var(--space-9) var(--space-5);
+  color: var(--ink-faint);
+}
+
+.empty-state__icon {
+  font-size: 4rem;
+  margin-bottom: var(--space-4);
+  opacity: 0.4;
+}
+
+.empty-state__title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--ink-muted);
+  margin-bottom: var(--space-2);
+}
+
+.empty-state__text {
+  font-size: 0.9rem;
+}
+
+/* ── Confirm dialog ──────────────────────────────────────── */
+.confirm-dialog__text {
+  color: var(--ink-muted);
+  margin-bottom: var(--space-6);
+  line-height: 1.6;
+}
+
+.confirm-dialog__actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+}

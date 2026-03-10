@@ -1,0 +1,146 @@
+/* styles/DogCard.css */
+
+.dog-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+  animation: fadeUp 0.4s ease both;
+  display: flex;
+  flex-direction: column;
+}
+
+.dog-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ── Image ─────────────────────────────────────────────── */
+.dog-card__img-wrap {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--amber-pale);
+  position: relative;
+}
+
+.dog-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.dog-card:hover .dog-card__img {
+  transform: scale(1.04);
+}
+
+.dog-card__img-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: var(--amber);
+  background: var(--amber-pale);
+}
+
+/* ── Body ──────────────────────────────────────────────── */
+.dog-card__body {
+  padding: var(--space-4);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.dog-card__name {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dog-card__age {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--ink-faint);
+  background: var(--cream);
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+}
+
+.dog-card__description {
+  font-size: 0.875rem;
+  color: var(--ink-muted);
+  line-height: 1.5;
+  flex: 1;
+  line-clamp: 3;
+  /* Clamp to 3 lines */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.dog-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border);
+  margin-top: auto;
+}
+
+.dog-card__owner {
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+}
+
+.dog-card__owner span {
+  color: var(--amber);
+  font-weight: 500;
+}
+
+/* ── Owner controls (edit/delete) shown when it's your dog ── */
+.dog-card__actions {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.dog-card__action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  transition: all var(--transition-fast);
+}
+
+.dog-card__action-btn--edit {
+  color: var(--amber);
+  background: var(--amber-pale);
+}
+
+.dog-card__action-btn--edit:hover {
+  background: var(--amber);
+  color: white;
+}
+
+.dog-card__action-btn--delete {
+  color: var(--rust);
+  background: #FDECEA;
+}
+
+.dog-card__action-btn--delete:hover {
+  background: var(--rust);
+  color: white;
+}

@@ -1,10 +1,28 @@
+/**
+ * main.tsx
+ * 
+ * App entry point.
+ * 
+ * Wrap the app with two providers:
+ * - <BrowserRouter>: gives all child components access to routing
+ * - <AuthProvider>: gives all child components access to auth state
+ */
+
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext.tsx';
 import App from './App.tsx';
 
-createRoot(document.getElementById('root')!).render(
+const rootElement = document.getElementById('root');
+if (!rootElement) throw new Error('Root element not found');
+
+createRoot(rootElement).render(
   <StrictMode>
-    <App />
-  </StrictMode>,
-)
+    <BrowserRouter>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </BrowserRouter>
+  </StrictMode>
+);

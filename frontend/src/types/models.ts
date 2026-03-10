@@ -30,10 +30,8 @@ export interface Token {
  */
 export interface User {
     id: number;
-    is_active: boolean;
+    username: string;
     is_superuser: boolean;
-    hashed_password: string;
-    created_at: string;
 }
 
 // ----- DOG TYPES -----

@@ -1,0 +1,138 @@
+/* styles/globals.css
+ *
+ * This file sets up CSS custom properties (variables) and a base reset.
+ * All colors, spacing, and type scales live here so you can tweak the
+ * whole look from one place.
+ */
+
+:root {
+  /* ── Colors ──────────────────────────────────────────── */
+  --cream:       #F5F0E8;
+  --warm-white:  #FAFAF7;
+  --ink:         #1A1A18;
+  --ink-muted:   #4A4A44;
+  --ink-faint:   #8A8A80;
+  --amber:       #C8852A;
+  --amber-light: #E8A84A;
+  --amber-pale:  #F5E8CC;
+  --rust:        #B84C2A;
+  --sage:        #5A7A5A;
+  --surface:     #FFFFFF;
+  --border:      #E0D8CC;
+  --border-dark: #C8BCA8;
+
+  /* ── Typography ─────────────────────────────────────── */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
+
+  /* ── Spacing scale ───────────────────────────────────── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+
+  /* ── Radii ───────────────────────────────────────────── */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* ── Shadows ─────────────────────────────────────────── */
+  --shadow-sm: 0 1px 3px rgba(26,26,24,0.08);
+  --shadow-md: 0 4px 16px rgba(26,26,24,0.10);
+  --shadow-lg: 0 8px 32px rgba(26,26,24,0.14);
+  --shadow-card: 0 2px 8px rgba(26,26,24,0.06), 0 8px 24px rgba(26,26,24,0.08);
+
+  /* ── Transitions ─────────────────────────────────────── */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+
+  /* ── Layout ──────────────────────────────────────────── */
+  --max-width: 1280px;
+  --nav-height: 72px;
+}
+
+/* ── Reset ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  font-weight: 300;
+  color: var(--ink);
+  background-color: var(--cream);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+input, textarea, select {
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  line-height: 1.2;
+}
+
+/* ── Utility classes ─────────────────────────────────────────────────────── */
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-5);
+}
+
+/* Fade-in animation used across pages */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

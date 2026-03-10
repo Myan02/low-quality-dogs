@@ -25,7 +25,7 @@ export async function getAllDogs(params: DogListParams): Promise<Dog[]> {
  * GET /dogs/name/:name
  * Returns all dogs with a matching name.
  */
-export async function getDogByName(name: string): Promise<Dog[]> {
+export async function getDogsByName(name: string): Promise<Dog[]> {
     const { data } = await apiClient.get<Dog[]>(`/dogs/name/${name}`);
     return data;
 }

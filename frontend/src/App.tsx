@@ -1,35 +1,66 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+/**
+ * App.tsx
+ *
+ * The root component. This sets up:
+ *  1. React Router — maps URL paths to page components
+ *  2. The Navbar — which needs to be on every page
+ *  3. The upload modal state — the Navbar's "Upload Dog" button
+ *     is on every page, but the modal is rendered here so it works
+ *     even when navigating.
+ *
+ * react-router-dom's <Routes> and <Route> work like a switch statement:
+ * React renders the first <Route> whose path matches the current URL.
+ */
 
-function App() {
-  const [count, setCount] = useState(0)
+import { useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
+
+import Navbar from './components/Navbar';
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import UploadDogModal from './components/UploadDogModal';
+import { useAuth } from './context/AuthContext';
+
+import './styles/globals.css';
+
+export default function App() {
+  const { isAuthenticated } = useAuth();
+  const [showUpload, setShowUpload] = useState(false);
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+      {/* Navbar appears on every page */}
+      <Navbar onUploadClick={() => setShowUpload(true)} />
 
-export default App
+      {/* Page content — swaps based on the URL */}
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        {/* Catch-all: redirect unknown URLs back to home */}
+        <Route path="*" element={<HomePage />} />
+      </Routes>
+
+      {/* Footer */}
+      <footer className="footer">
+        <div className="container footer__inner">
+          <span>🐾 DogBook — Share your best friend</span>
+          <span>Built with FastAPI + React</span>
+        </div>
+      </footer>
+
+      {/* Upload modal — triggered from the Navbar */}
+      {showUpload && isAuthenticated && (
+        <UploadDogModal
+          onClose={() => setShowUpload(false)}
+          onSuccess={() => {
+            setShowUpload(false);
+            // Trigger a page refresh by navigating to home
+            window.location.href = '/';
+          }}
+        />
+      )}
+    </>
+  );
+}
