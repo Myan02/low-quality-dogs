@@ -1,7 +1,7 @@
 from typing import Annotated
 from datetime import datetime
 
-from fastapi import Form, UploadFile
+from fastapi import Form, UploadFile, File
 from pydantic import BaseModel, Field
 
 """
@@ -13,14 +13,17 @@ class DogBase(BaseModel):
     description: Annotated[str, Field(title="Dog Description", description="A short description of your dog.", max_length=250)]
 
 # Creating a dog
-class DogCreate(DogBase):
-    image: Annotated[UploadFile, Field(title="Dog Image File", description="Image file for your dog")]
+class DogCreate(BaseModel):
+    name: Annotated[str, Form(min_length=1, max_length=128)]
+    age: Annotated[int, Form(ge=0, le=99)]
+    description: Annotated[str, Form(max_length=250)]
+    image: Annotated[UploadFile, File()]
 
 class DogEdit(DogBase):
-    name: Annotated[str | None, Field(title="Dog Name Edit", description="The new name of your dog", min_length=1, max_length=128)] = None
-    age: Annotated[int | None, Field(title="Dog Age Edit", description="The new age of your dog", ge=0, lt=50)] = None
-    description: Annotated[str | None, Field(title="Dog Description Edit", description="The new description of your dog", max_length=250)] = None
-    image: Annotated[UploadFile | None, Field(title="Dog Image File Edit", description="The new image file for your dog")] = None
+    name: Annotated[str | None, Form(min_length=1, max_length=128)] = None
+    age: Annotated[int | None, Form(ge=0, le=99)] = None
+    description: Annotated[str | None, Form(max_length=250)] = None
+    image: Annotated[UploadFile | None, File()] = None
 
 # Returning a dog
 class DogReturn(DogBase):

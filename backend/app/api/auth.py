@@ -43,7 +43,8 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> mod
         if user is None:
             raise credentials_exception()
         
-    except:
+    except Exception as e:
+        print(f"error: {e}")
         raise credentials_exception()
 
     return models.UserReturn(**user)
@@ -120,4 +121,11 @@ def register_user(user_data: Annotated[models.UserCreate, Form()]) -> Any:
         )
 
     return models.UserReturn(**dict(new_user))
+
+"""
+This endpoint returns the current logged in user
+"""
+@router.get("/me", response_model=models.UserReturn)
+async def GetMe(current_user: Annotated[models.UserReturn, Depends(get_current_user)]):
+    return current_user
 

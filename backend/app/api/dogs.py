@@ -1,7 +1,7 @@
 from typing import Annotated, Any
 from pathlib import Path as DirPath
 
-from fastapi import APIRouter, HTTPException, Path, Depends, status, Query
+from fastapi import APIRouter, HTTPException, Path, Depends, status, Query, Form, UploadFile, File
 
 from app.api.auth import get_current_user
 from app.db import db, queries
@@ -19,12 +19,15 @@ router = APIRouter(prefix="/dogs", tags=["dogs"])
 """
 @router.post("/", response_model=models.DogReturn, status_code=status.HTTP_201_CREATED)
 async def UploadDog(
-    form_data: Annotated[models.DogCreate, Depends()], 
+    name: Annotated[str, Form(min_length=1, max_length=128)],
+    age: Annotated[int, Form(ge=0, le=99)],
+    description: Annotated[str, Form(max_length=250)],
+    image: Annotated[UploadFile, File()],
     current_user: Annotated[models.UserReturn, Depends(get_current_user)]
 ) -> Any:
     
     # Raise exception if incorrect file type
-    if DirPath(form_data.image.filename).suffix not in Settings.ACCEPTABLE_FORMATS:
+    if DirPath(image.filename).suffix not in Settings.ACCEPTABLE_FORMATS:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Use one of the supported file types."
@@ -35,9 +38,9 @@ async def UploadDog(
         with db.db_session() as conn:
             img_record = conn.execute(
                 queries.InsertDog(), {
-                    "name": form_data.name, 
-                    "age": form_data.age, 
-                    "description": form_data.description,
+                    "name": name, 
+                    "age": age, 
+                    "description": description,
                     "owner_id": current_user.id,
                     "owner_username": current_user.username
                 }
@@ -47,7 +50,7 @@ async def UploadDog(
 
         # compress and save video 
         # returns a dict if successfull or raise HTTP exception
-        await CompressImage(id=dog.id, name=dog.name, image=form_data.image)
+        await CompressImage(id=dog.id, name=dog.name, image=image)
 
         # update the db entry with the proper image url
         with db.db_session() as conn:
