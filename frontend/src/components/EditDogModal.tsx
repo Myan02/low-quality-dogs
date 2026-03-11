@@ -82,7 +82,7 @@ export default function EditDogModal({ dog, onClose, onSuccess }: Props) {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             required
-                            maxLength={50}
+                            maxLength={64}
                         />
                     </div>
 
@@ -96,7 +96,7 @@ export default function EditDogModal({ dog, onClose, onSuccess }: Props) {
                             onChange={(e) => setAge(e.target.value)}
                             required
                             min={0}
-                            max={30}
+                            max={99}
                         />
                     </div>
 

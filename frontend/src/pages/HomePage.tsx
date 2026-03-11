@@ -41,6 +41,7 @@ export default function HomePage() {
 
     // Dog feed + pagination
     const { dogs, loading, error, page, setPage, refresh, hasMore } = useDogs();
+    const [refreshKey, setRefreshKey] = useState(0);
 
     // Search
     const { results: searchResults, loading: searchLoading, error: searchError,
@@ -67,6 +68,7 @@ export default function HomePage() {
     // Called when upload/edit/delete succeeds — refresh the dog list
     function handleSuccess() {
         refresh();
+        setRefreshKey(k => k + 1)
     }
 
     // Clicking "Upload Dog" when not logged in redirects to login
@@ -85,10 +87,10 @@ export default function HomePage() {
                 <div className="home-page__header">
                     <div>
                         <h1 className="home-page__title">
-                            Meet the <em>Good Boys</em><br />& Girls
+                            Welcome to <br /><em>Low Quality Dogs</em>
                         </h1>
                         <p className="home-page__subtitle">
-                            A community of dog lovers sharing their best friends
+                            Share a dog. I'll make it low quality. Or actually share any picture it's fine.
                         </p>
                     </div>
                     {isAuthenticated && (
@@ -154,7 +156,7 @@ export default function HomePage() {
                     <div className="dog-grid">
                         {displayedDogs.map((dog) => (
                             <DogCard
-                                key={dog.id}
+                                key={`${dog.id}-${refreshKey}`}
                                 dog={dog}
                                 onEdit={(d) => setModal({ type: 'edit', dog: d })}
                                 onDelete={(d) => setModal({ type: 'delete', dog: d })}
@@ -179,7 +181,7 @@ export default function HomePage() {
                 )}
 
                 {/* ── Pagination (only shown when not searching) ─── */}
-                {!isSearching && !loading && dogs.length > 0 && (
+                {!isSearching && !loading && dogs.length >= 0 && (
                     <div className="pagination">
                         <button
                             className="btn btn--secondary"

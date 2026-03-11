@@ -19,11 +19,11 @@ router = APIRouter(prefix="/dogs", tags=["dogs"])
 """
 @router.post("/", response_model=models.DogReturn, status_code=status.HTTP_201_CREATED)
 async def UploadDog(
-    name: Annotated[str, Form(min_length=1, max_length=128)],
-    age: Annotated[int, Form(ge=0, le=99)],
-    description: Annotated[str, Form(max_length=250)],
-    image: Annotated[UploadFile, File()],
-    current_user: Annotated[models.UserReturn, Depends(get_current_user)]
+    current_user: Annotated[models.UserReturn, Depends(get_current_user)],
+    name: Annotated[str, Form(title="Dog Name", description="The name of your dog.", min_length=1, max_length=64)],
+    age: Annotated[int, Form(title="Dog Age", description="Your dog's age.", ge=0, le=99)],
+    description: Annotated[str, Form(title="Dog Description", description="A short description of your dog.", max_length=250)],
+    image: Annotated[UploadFile, File(title="Dog Image", description="The file to upload of your dog.")],
 ) -> Any:
     
     # Raise exception if incorrect file type
@@ -154,9 +154,12 @@ def GetDogById(id: Annotated[int, Path(description="The id of your dog to retrie
 """
 @router.patch("/{id}", response_model=models.DogReturn)
 async def EditDog(
+    current_user: Annotated[models.UserReturn, Depends(get_current_user)],
     id: Annotated[int, Path(description="The id of your dog to retrieve", gt=0)], 
-    form_data: Annotated[models.DogEdit, Depends()],
-    current_user: Annotated[models.UserReturn, Depends(get_current_user)]
+    name: Annotated[str | None, Form(title="Dog Name Edit", description="New name for your dog.", min_length=1, max_length=128)] = None,
+    age: Annotated[int | None, Form(title="Dog Age Edit", description="New age for your dog.", ge=0, le=99)] = None,
+    description: Annotated[str | None, Form(title="Dog Description Edit", description="New description for your dog.", max_length=250)] = None,
+    image: Annotated[UploadFile | None, File(title="Dog Image Edit", description="New image for your dog.")] = None,
 ) -> Any:
     try:
         # check if the dog exists
@@ -187,32 +190,32 @@ async def EditDog(
         )
 
     # rename image 
-    if form_data.name:
+    if name:
         img_path = DirPath(f"{Directories.LOCAL_IMAGE_DIR}/{dog.name}_{dog.id}.{Settings.IMG_FORMAT.lower()}")
-        img_path.rename(DirPath(f"{Directories.LOCAL_IMAGE_DIR}/{form_data.name}_{dog.id}.{Settings.IMG_FORMAT.lower()}"))
+        img_path.rename(DirPath(f"{Directories.LOCAL_IMAGE_DIR}/{name}_{dog.id}.{Settings.IMG_FORMAT.lower()}"))
 
     try:
         # update db with new name or new age
-        if form_data.name or form_data.age or form_data.description:
+        if name or age or description:
             with db.db_session() as conn:
                 row = conn.execute(
                     queries.UpdateDog(
-                        name_flag=bool(form_data.name), 
-                        age_flag=bool(form_data.age),
-                        description_flag=bool(form_data.description)
+                        name_flag=bool(name), 
+                        age_flag=bool(age),
+                        description_flag=bool(description)
                     ), {
                         "id": id, 
-                        "name": form_data.name, 
-                        "age": form_data.age,
-                        "description": form_data.description,
+                        "name": name, 
+                        "age": age,
+                        "description": description,
                     }
                 ).fetchone()
         
         dog = models.DogReturn(**dict(row))
 
         # compress new uploaded image and replace old image
-        if form_data.image:
-            await CompressImage(id=id, name=dog.name, image=form_data.image)
+        if image:
+            await CompressImage(id=id, name=dog.name, image=image)
     
     except Exception as e:
         raise HTTPException(

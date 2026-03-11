@@ -12,18 +12,11 @@ class DogBase(BaseModel):
     age: Annotated[int, Field(title="Dog Age", description="Your dog's age.", ge=0, le=99)]
     description: Annotated[str, Field(title="Dog Description", description="A short description of your dog.", max_length=250)]
 
-# Creating a dog
-class DogCreate(BaseModel):
-    name: Annotated[str, Form(min_length=1, max_length=128)]
-    age: Annotated[int, Form(ge=0, le=99)]
-    description: Annotated[str, Form(max_length=250)]
-    image: Annotated[UploadFile, File()]
 
 class DogEdit(DogBase):
-    name: Annotated[str | None, Form(min_length=1, max_length=128)] = None
-    age: Annotated[int | None, Form(ge=0, le=99)] = None
-    description: Annotated[str | None, Form(max_length=250)] = None
-    image: Annotated[UploadFile | None, File()] = None
+    name: Annotated[str | None, Form(title="Dog Name Edit", description="New name for your dog.", min_length=1, max_length=128)] = None
+    age: Annotated[int | None, Form(title="Dog Age Edit", description="New age for your dog.", ge=0, le=99)] = None
+    description: Annotated[str | None, Form(title="Dog Description Edit", description="New description for your dog.", max_length=250)] = None
 
 # Returning a dog
 class DogReturn(DogBase):

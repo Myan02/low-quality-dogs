@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, type SubmitEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../api/auth';
 import apiClient from '../api/client';
@@ -17,7 +17,7 @@ export default function LoginPage() {
     const { loginUser } = useAuth();
     const navigate = useNavigate();
 
-    async function handleSubmit(e: FormEvent) {
+    async function handleSubmit(e: SubmitEvent) {
         e.preventDefault();
         setLoading(true);
         setError(null);
@@ -51,7 +51,7 @@ export default function LoginPage() {
         <div className="auth-page">
             <div className="auth-card">
                 <p className="auth-card__eyebrow">Welcome back</p>
-                <h1 className="auth-card__title">Sign in to DogBook</h1>
+                <h1 className="auth-card__title">Sign in</h1>
 
                 <form className="form" onSubmit={handleSubmit}>
                     {error && <div className="alert alert--error">⚠ {error}</div>}
@@ -62,7 +62,7 @@ export default function LoginPage() {
                             id="username"
                             className="form__input"
                             type="text"
-                            placeholder="your_username"
+                            placeholder="your username"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             required

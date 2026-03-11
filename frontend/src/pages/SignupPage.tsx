@@ -66,7 +66,7 @@ export default function SignupPage() {
     return (
         <div className="auth-page">
             <div className="auth-card">
-                <p className="auth-card__eyebrow">Join DogBook</p>
+                <p className="auth-card__eyebrow">Join Low Quality Dogs</p>
                 <h1 className="auth-card__title">Create your account</h1>
 
                 <form className="form" onSubmit={handleSubmit}>
@@ -78,7 +78,7 @@ export default function SignupPage() {
                             id="signup-username"
                             className="form__input"
                             type="text"
-                            placeholder="dog_lover_99"
+                            placeholder="pick a username bro"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             required

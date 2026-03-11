@@ -84,7 +84,7 @@ export default function UploadDogModal({ onClose, onSuccess }: Props) {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             required
-                            maxLength={50}
+                            maxLength={64}
                         />
                     </div>
 

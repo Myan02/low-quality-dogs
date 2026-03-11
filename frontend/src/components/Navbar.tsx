@@ -11,11 +11,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import '../styles/Navbar.css';
 
-interface NavbarProps {
-    onUploadClick: () => void;  // called when "Upload Dog" button is pressed
-}
 
-export default function Navbar({ onUploadClick }: NavbarProps) {
+export default function Navbar() {
     const { user, isAuthenticated, logoutUser } = useAuth();
     const navigate = useNavigate();
 
@@ -25,28 +22,23 @@ export default function Navbar({ onUploadClick }: NavbarProps) {
     }
 
     return (
-        <nav className="navBar">
+        <nav className="navbar">
             <div className="container navbar__inner">
                 {/* Logo / Home link */}
                 <Link to="/" className="navbar__logo">
-                    <span className="navbar__logo-paw">🐾</span>
-                    DogBook
+                    <span className="navbar__logo-paw">🐶</span>
+                    Low Quality Dogs
                 </Link>
 
                 <div className="navbar__right">
                     {isAuthenticated ? (
                         <>
                             {/* Show who is logged in */}
-                            <span className="navbar__user">Hey, {user?.username}</span>
-
-                            {/* Upload button when logged in */}
-                            <button className="navbar__btn navbar__btn--amber" onClick={onUploadClick}>
-                                + Upload Dog
-                            </button>
+                            <span className="navbar__user">Welcome back {user?.username}!</span>
 
                             {/* Logout */}
                             <button className="navbar__btn navbar__btn--ghost" onClick={handleLogout}>
-                                Logout
+                                Log out
                             </button>
                         </>
                     ) : (

@@ -6,6 +6,7 @@
  * if the user is logged in (or a superuser), they also get access to edit and delete
  */
 
+import { useState } from "react";
 import type { Dog } from "../types/models";
 import { useAuth } from "../context/AuthContext";
 import "../styles/DogCard.css";
@@ -20,6 +21,7 @@ interface DogCardProps {
 // this function turns those paths into a url the browser can load
 function resolveImageUrl(imagePath: string | null): string | null {
     if (!imagePath) return null;
+    if (imagePath.startsWith('http')) return imagePath;
 
     // Normalize backslashes (Windows paths) to forward slashes
     const normalized = imagePath.replace(/\\/g, '/');
@@ -29,28 +31,37 @@ function resolveImageUrl(imagePath: string | null): string | null {
     const filename = normalized.split('/').pop();
     if (!filename) return null;
 
-    return `/images/${filename}`;
+    return `/images/${filename}?t=${Date.now()}`;
 }
 
 export default function DogCard({ dog, onEdit, onDelete }: DogCardProps) {
     const { user, isAuthenticated } = useAuth();
 
+    const [imgUrl, setImgUrl] = useState<string | null>(
+        () => resolveImageUrl(dog.image_url)
+    );
+    const [imgVisible, setImgVisible] = useState(true);
+
     const isOwner = isAuthenticated && (user?.id === dog.owner_id || user?.is_superuser);
-    const imgUrl = resolveImageUrl(dog.image_url);
+
+    function handleEdit() {
+        onEdit(dog);
+
+        setImgUrl(resolveImageUrl(dog.image_url));
+        setImgVisible(true);
+    }
 
     return (
         <article className="dog-card">
             {/* -- IMAGE -- */}
             <div className="dog-card__img-wrap">
-                {imgUrl ? (
+                {imgUrl && imgVisible ? (
                     <img
                         src={imgUrl}
                         alt={`Photo of ${dog.name}`}
                         className="dog-card__img"
 
-                        onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = 'none';
-                        }}
+                        onError={() => setImgVisible(false)}
                     />
                 ) : (
                     <div className="dog-card__img-placeholder">🐶</div>
@@ -81,7 +92,7 @@ export default function DogCard({ dog, onEdit, onDelete }: DogCardProps) {
                             <button
                                 className="dog-card__action-btn dog-card__action-btn__edit"
                                 title="Edit Dog"
-                                onClick={() => onEdit(dog)}
+                                onClick={handleEdit}
                             >
                                 ✎
                             </button>

@@ -31,7 +31,7 @@ export default function App() {
   return (
     <>
       {/* Navbar appears on every page */}
-      <Navbar onUploadClick={() => setShowUpload(true)} />
+      <Navbar />
 
       {/* Page content — swaps based on the URL */}
       <Routes>
@@ -45,7 +45,8 @@ export default function App() {
       {/* Footer */}
       <footer className="footer">
         <div className="container footer__inner">
-          <span>🐾 DogBook — Share your best friend</span>
+          <span>🐾 Low Quality Dogs — Thanks for sharing!</span>
+          <span>© Michael Baburyan 2026</span>
           <span>Built with FastAPI + React</span>
         </div>
       </footer>
