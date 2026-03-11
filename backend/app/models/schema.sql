@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS Dogs(
     image_url TEXT NOT NULL DEFAULT "PLACEHOLDER",
     owner_id INTEGER NOT NULL,
     owner_username TEXT NOT NULL,
-    created_at DATE DEFAULT CURRENT_DATE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (owner_id) 
     REFERENCES Users (id)
         ON UPDATE CASCADE
