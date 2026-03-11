@@ -90,7 +90,7 @@ export default function HomePage() {
                             Welcome to <br /><em>Low Quality Dogs</em>
                         </h1>
                         <p className="home-page__subtitle">
-                            Share a dog. I'll make it low quality. Or actually share any picture it's fine.
+                            Share a dog. See it in low quality. Or actually share any picture it's fine.
                         </p>
                     </div>
                     {isAuthenticated && (

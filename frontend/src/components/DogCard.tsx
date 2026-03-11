@@ -6,7 +6,7 @@
  * if the user is logged in (or a superuser), they also get access to edit and delete
  */
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import type { Dog } from "../types/models";
 import { useAuth } from "../context/AuthContext";
 import "../styles/DogCard.css";
@@ -42,7 +42,10 @@ export default function DogCard({ dog, onEdit, onDelete }: DogCardProps) {
     );
     const [imgVisible, setImgVisible] = useState(true);
 
-    const isOwner = isAuthenticated && (user?.id === dog.owner_id || user?.is_superuser);
+    const isOwner = useMemo(
+        () => isAuthenticated && (user?.id === dog.owner_id || user?.is_superuser),
+        [isAuthenticated, user, dog.owner_id]
+    );
 
     function handleEdit() {
         onEdit(dog);
