@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { User } from '../types/models';
 
 interface AuthContextValue {
@@ -44,6 +44,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setToken(null);
         setUser(null);
     }
+
+    useEffect(() => {
+        window.addEventListener('auth:logout', logoutUser);
+        return () => window.removeEventListener('auth:logout', logoutUser);
+    }, []);
 
     return (
         <AuthContext.Provider
