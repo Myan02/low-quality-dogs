@@ -9,9 +9,10 @@
 import { useState, type SubmitEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { signup, login } from '../api/auth';
+import apiClient from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import type { AxiosError } from 'axios';
-import type { ApiError } from '../types/models';
+import type { ApiError, User } from '../types/models';
 import '../styles/pages.css';
 import '../styles/components.css';
 
@@ -48,11 +49,17 @@ export default function SignupPage() {
 
             // 2. Auto-login with the new credentials
             const tokenData = await login({ username, password });
-            loginUser(tokenData.access_token, {
-                id: 0,
-                username,
-                is_superuser: false,
-            });
+
+            // Step 2: store token in localStorage immediately so the next
+            // request has it available in the Axios interceptor
+            localStorage.setItem('access_token', tokenData.access_token);
+
+            // Step 3: fetch the real user record (requires the token just stored)
+            // This gives us the correct id and is_superuser flag
+            const me = await apiClient.get<User>('/auth/me');
+
+            // Step 4: hand off to context (also writes to localStorage)
+            loginUser(tokenData.access_token, me.data);
 
             navigate('/');
         } catch (err) {
