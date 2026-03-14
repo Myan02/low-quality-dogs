@@ -23,15 +23,12 @@ function resolveImageUrl(imagePath: string | null): string | null {
     if (!imagePath) return null;
     if (imagePath.startsWith('http')) return imagePath;
 
-    // Normalize backslashes (Windows paths) to forward slashes
-    const normalized = imagePath.replace(/\\/g, '/');
-
     // Extract just the filename (e.g. "elster_2.jpeg") regardless of
     // what directory prefix the backend stored, then serve via /images/
-    const filename = normalized.split('/').pop();
+    const filename = imagePath.split('/').pop();
     if (!filename) return null;
 
-    return `/images/${filename}?t=${Date.now()}`;
+    return `/images/${filename}`;
 }
 
 export default function DogCard({ dog, onEdit, onDelete }: DogCardProps) {

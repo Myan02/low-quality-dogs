@@ -194,6 +194,17 @@ async def EditDog(
         img_path = DirPath(f"{Directories.LOCAL_IMAGE_DIR}/{dog.name}_{dog.id}.{Settings.IMG_FORMAT.lower()}")
         img_path.rename(DirPath(f"{Directories.LOCAL_IMAGE_DIR}/{name}_{dog.id}.{Settings.IMG_FORMAT.lower()}"))
 
+        # update the db entry with the proper image url
+        with db.db_session() as conn:
+            updated_record = conn.execute(
+                queries.UpdateImageUrl(), {
+                    "image_url": f"{Directories.LOCAL_IMAGE_DIR}/{name}_{dog.id}.{Settings.IMG_FORMAT.lower()}",
+                    "id": id,
+                }
+            ).fetchone()
+
+        dog.image_url = dict(updated_record)["image_url"]
+
     try:
         # update db with new name or new age
         if name or age or description:
@@ -216,6 +227,7 @@ async def EditDog(
         # compress new uploaded image and replace old image
         if image:
             await CompressImage(id=id, name=dog.name, image=image)
+
     
     except Exception as e:
         raise HTTPException(
