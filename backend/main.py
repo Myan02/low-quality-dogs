@@ -85,5 +85,6 @@ if __name__ == "__main__":
         app=Settings.APP,
         host=Settings.HOST,
         port=Settings.PORT,
-        reload=Settings.APP_RELOAD
+        workers=Settings.WORKERS,
+        reload=Settings.APP_RELOAD,
     )

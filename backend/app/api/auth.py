@@ -1,7 +1,7 @@
 from datetime import timedelta
 from typing import Annotated, Any
 
-from fastapi import APIRouter, HTTPException, Depends, status, Form
+from fastapi import APIRouter, HTTPException, Depends, status, Form, Path
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import jwt
 from jwt.exceptions import InvalidTokenError
@@ -123,9 +123,75 @@ def register_user(user_data: Annotated[models.UserCreate, Form()]) -> Any:
     return models.UserReturn(**dict(new_user))
 
 """
-This endpoint returns the current logged in user
+# This endpoint returns the current logged in user
 """
 @router.get("/me", response_model=models.UserReturn)
-async def GetMe(current_user: Annotated[models.UserReturn, Depends(get_current_user)]):
+async def GetMe(current_user: Annotated[models.UserReturn, Depends(get_current_user)]) -> Any:
     return current_user
+
+"""
+# This endpoint will delete a user
+# Can only be used by a superuser
+"""
+@router.delete("/{user_id}", response_model=models.UserReturn)
+async def DeleteUser(
+    user_id: Annotated[int, Path(title="User Delete", description="The user id to delete", gt=0)],
+    current_user: Annotated[models.UserReturn, Depends(get_current_user)]
+) -> Any:
+    
+    # Cannot delete other accounts without being admin
+    if not current_user.is_superuser:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Anauthorized request, permission denied."
+        )
+    
+    # Search user to make sure they exist
+    try:
+        with db.db_session() as conn:
+            queried_user = conn.execute(
+                queries.GetUserById(), {"id": user_id}
+            ).fetchone()
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail=f"Something went wrong on our end, error: {e}"
+        )
+    
+    # Check if user exists
+    if not queried_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="The user you are trying to delete does not exist."
+        )
+    
+    user = models.UserReturn(**dict(queried_user))
+
+    # Check if you are trying to delete your own account
+    if user.id == current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You cannot delete your own admin account."
+        )
+    
+    # Delete account
+    try:
+        with db.db_session() as conn:
+            conn.execute(
+                queries.DeleteUserById(), {"id": user.id}
+            ).fetchone()
+    
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail=f"Something went wrong on our end, error: {e}"
+        )
+    
+    return user
+    
+
+
+
+
 

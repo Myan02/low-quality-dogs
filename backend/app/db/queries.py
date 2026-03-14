@@ -99,11 +99,29 @@ def CreateUser(is_superuser: bool = False) -> str:
 
     return query
 
+def GetUserById() -> str:
+    query = """
+        SELECT *
+        FROM Users
+        WHERE id = :id;
+    """
+
+    return query
+
 def GetUserByUsername() -> str:
     query = """
         SELECT *
         FROM Users
         WHERE username = :username;
+    """
+
+    return query
+
+def DeleteUserById() -> str:
+    query = """
+        DELETE FROM Users
+        WHERE id = :id
+        RETURNING id, username, hashed_password, is_active, is_superuser, created_at;
     """
 
     return query

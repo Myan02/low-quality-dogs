@@ -16,6 +16,7 @@ class Settings():
     APP_TITLE = os.getenv("APP_TITLE")
     PORT = int(os.getenv("PORT"))
     HOST = os.getenv("HOST")
+    WORKERS = int(os.getenv("WORKERS"))
     APP_RELOAD = bool(os.getenv("APP_RELOAD"))
 
     BACKEND_CORS_ORIGINS = os.getenv("BACKEND_CORS_ORIGINS").split(",")
