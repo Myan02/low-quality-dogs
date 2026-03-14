@@ -84,7 +84,7 @@ export default function UploadDogModal({ onClose, onSuccess }: Props) {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             required
-                            maxLength={64}
+                            maxLength={12}
                         />
                     </div>
 
@@ -133,7 +133,7 @@ export default function UploadDogModal({ onClose, onSuccess }: Props) {
                                 accept=".jpg,.jpeg,.png,.webp"
                                 onChange={handleFileChange}
                             />
-                            <div className="form__file-icon">{imageFile ? '✅' : '📸'}</div>
+                            <div className="form__file-icon">{imageFile ? '✅' : '📤'}</div>
                             {imageFile ? (
                                 <p className="form__file-name">{imageFile.name}</p>
                             ) : (

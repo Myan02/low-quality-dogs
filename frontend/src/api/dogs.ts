@@ -64,6 +64,7 @@ export async function editDog(id: number, form: DogEditForm): Promise<Dog> {
     const formData = new FormData();
     if (form.name !== undefined) formData.append('name', form.name);
     if (form.age !== undefined) formData.append('age', String(form.age));
+    if (form.description !== undefined) formData.append('description', form.description);
     if (form.image !== undefined) formData.append('image', form.image);
 
     const { data } = await apiClient.patch<Dog>(`/dogs/${id}`, formData);

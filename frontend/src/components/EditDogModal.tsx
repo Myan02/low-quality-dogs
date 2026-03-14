@@ -24,6 +24,7 @@ export default function EditDogModal({ dog, onClose, onSuccess }: Props) {
     // Pre-populate with existing values
     const [name, setName] = useState(dog.name);
     const [age, setAge] = useState(String(dog.age));
+    const [description, setDescription] = useState(dog.description);
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -44,6 +45,7 @@ export default function EditDogModal({ dog, onClose, onSuccess }: Props) {
         const changes: Record<string, string | number | File> = {};
         if (name !== dog.name) changes.name = name;
         if (parseInt(age, 10) !== dog.age) changes.age = parseInt(age, 10);
+        if (description !== dog.description) changes.description = description;
         if (imageFile) changes.image = imageFile;
 
         if (Object.keys(changes).length === 0) {
@@ -81,7 +83,6 @@ export default function EditDogModal({ dog, onClose, onSuccess }: Props) {
                             type="text"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            required
                             maxLength={64}
                         />
                     </div>
@@ -94,10 +95,22 @@ export default function EditDogModal({ dog, onClose, onSuccess }: Props) {
                             type="number"
                             value={age}
                             onChange={(e) => setAge(e.target.value)}
-                            required
                             min={0}
                             max={99}
                         />
+                    </div>
+
+                    <div className="form__group">
+                        <label className="form__label" htmlFor="edit-description">Description</label>
+                        <textarea
+                            id="edit-description"
+                            className="form__textarea"
+                            placeholder="Give your dog a new description..."
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            maxLength={250}
+                        >
+                        </textarea>
                     </div>
 
                     <div className="form__group">
@@ -112,7 +125,7 @@ export default function EditDogModal({ dog, onClose, onSuccess }: Props) {
                                 accept=".jpg,.jpeg,.png,.webp"
                                 onChange={handleFileChange}
                             />
-                            <div className="form__file-icon">{imageFile ? '✅' : '🔄'}</div>
+                            <div className="form__file-icon">{imageFile ? '✅' : '📤'}</div>
                             <p className="form__file-label">
                                 {imageFile
                                     ? <span className="form__file-name">{imageFile.name}</span>

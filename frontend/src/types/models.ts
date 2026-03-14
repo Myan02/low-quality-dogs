@@ -75,6 +75,7 @@ export interface DogCreateForm {
 export interface DogEditForm {
     name?: string;
     age?: number;
+    description?: string;
     image?: File;
 }
 
