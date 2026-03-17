@@ -25,35 +25,31 @@ function resolveImageUrl(imagePath: string | null): string | null {
 
     // Extract just the filename (e.g. "elster_2.jpeg") regardless of
     // what directory prefix the backend stored, then serve via /images/
-    const filename = imagePath.split('/').pop();
+    const normalized = imagePath.replace(/\\/g, '/');
+    const filename = normalized.split('/').pop();
     if (!filename) return null;
 
     return `/images/${filename}`;
 }
 
 export default function DogCard({ dog, onEdit, onDelete }: DogCardProps) {
+
     const { user, isAuthenticated } = useAuth();
 
-    const [imgUrl, setImgUrl] = useState<string | null>(
-        () => resolveImageUrl(dog.image_url)
-    );
+    /* ── States ────────────────────────────────────────── */
+    const imgUrl = resolveImageUrl(dog.image_url);
     const [imgVisible, setImgVisible] = useState(true);
 
+    // remain authenticated even if the page refreshed
+    // only update this when the dependencies change
     const isOwner = useMemo(
         () => isAuthenticated && (user?.id === dog.owner_id || user?.is_superuser),
         [isAuthenticated, user, dog.owner_id]
     );
 
-    function handleEdit() {
-        onEdit(dog);
-
-        setImgUrl(resolveImageUrl(dog.image_url));
-        setImgVisible(true);
-    }
-
     return (
         <article className="dog-card">
-            {/* -- IMAGE -- */}
+            {/* ── Image ────────────────────────────────────────── */}
             <div className="dog-card__img-wrap">
                 {imgUrl && imgVisible ? (
                     <img
@@ -68,7 +64,7 @@ export default function DogCard({ dog, onEdit, onDelete }: DogCardProps) {
                 )}
             </div>
 
-            {/* -- BODY -- */}
+            {/* ── Body ────────────────────────────────────────── */}
             <div className="dog-card__body">
                 <div className="dog-card__name">
                     {dog.name}
@@ -81,7 +77,7 @@ export default function DogCard({ dog, onEdit, onDelete }: DogCardProps) {
                     <p className="dog-card__description">{dog.description}</p>
                 )}
 
-                {/* -- FOOTER -- */}
+                {/* ── Footer ────────────────────────────────────────── */}
                 <div className="dog-card__footer">
                     <span className="dog-card__owner">
                         by <span>{dog.owner_username}</span>
@@ -92,16 +88,16 @@ export default function DogCard({ dog, onEdit, onDelete }: DogCardProps) {
                             <button
                                 className="dog-card__action-btn dog-card__action-btn__edit"
                                 title="Edit Dog"
-                                onClick={handleEdit}
+                                onClick={() => onEdit(dog)}
                             >
-                                ✎
+                                Edit
                             </button>
                             <button
                                 className="dog-card__action-btn dog-card__action-btn__delete"
                                 title="Delete Dog"
                                 onClick={() => onDelete(dog)}
                             >
-                                ✕
+                                Delete
                             </button>
                         </div>
                     )}

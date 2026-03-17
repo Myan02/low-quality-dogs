@@ -112,14 +112,15 @@ def GetUserByUsername() -> str:
     query = """
         SELECT *
         FROM Users
-        WHERE username = :username;
+        WHERE username LIKE '%' || :username || '%'
+        ORDER BY created_at DESC;
     """
 
     return query
 
 def GetAllUsers() -> str:
     query = """
-        SELECT id, username, is_active, is_superuser
+        SELECT id, username, is_superuser
         FROM Users
         WHERE is_superuser = 0
         ORDER BY created_at DESC

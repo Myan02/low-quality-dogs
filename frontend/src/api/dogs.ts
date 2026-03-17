@@ -1,7 +1,7 @@
 /**
  * api/dogs.ts
  * 
- * All functions that communicate with /dogs endpoints.
+ * All functions that communicate with /dogs backend endpoints.
  */
 
 import apiClient from "./client";
@@ -76,7 +76,7 @@ export async function editDog(id: number, form: DogEditForm): Promise<Dog> {
  * Deletes a dog by id. Requires authentication.
  * Returns the deleted dog record.
  */
-export async function deleteDog(id: number): Promise<Dog> {
+export async function deleteDog(id?: number): Promise<Dog> {
     const { data } = await apiClient.delete<Dog>(`/dogs/${id}`);
     return data;
 }

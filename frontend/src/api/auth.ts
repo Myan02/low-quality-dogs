@@ -1,12 +1,10 @@
 /**
- * api/auth.ts
- * 
  * All functions that communicate with /auth endpoints.
  * 
  * login() - backend expects OAuth2 form encoding (not json), 
  *           use URLSearchParams to build form body.
  * 
- * signup() - backed uses Form() as well.
+ * signup() - backed uses Form() fields as well.
  */
 
 import apiClient from "./client";
@@ -14,7 +12,8 @@ import type {
     LoginCredentials, 
     SignupCredentials, 
     Token, 
-    User
+    User,
+    UserListParams
 } from "../types/models";
 
 /**
@@ -30,7 +29,7 @@ export async function login({ username, password }: LoginCredentials): Promise<T
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     });
 
-    return data
+    return data;
 }
 
 /**
@@ -46,5 +45,32 @@ export async function signup({ username, password }: SignupCredentials): Promise
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     });
 
+    return data;
+}
+
+/**
+ * GET /auth/?limit=10&offset=0
+ * Fetches all users
+ */
+export async function getAllUsers(params: UserListParams): Promise<User[]> {
+    const { data } = await apiClient.get<User[]>('/auth/', { params });
+    return data;
+}
+
+/**
+ * GET /auth/:username
+ * Fetches all users with the username = :username
+ */
+export async function getUsersByUsername(username: string): Promise<User[]> {
+    const { data } = await apiClient.get<User[]>(`/auth/${username}`);
+    return data;
+}
+
+/**
+ * DELETE /auth/:user_id
+ * Deletes a user with the given id
+ */
+export async function deleteUser(user_id?: number): Promise<User> {
+    const { data } = await apiClient.delete<User>(`/auth/${user_id}`);
     return data;
 }

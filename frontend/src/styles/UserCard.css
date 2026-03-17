@@ -1,0 +1,76 @@
+/* styles/UserCard.css */
+
+.user-card {
+    background: var(--cream);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: var(--space-2);
+    padding: var(--space-4);
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+    animation: fadeUp 0.4s ease both;
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-2);
+}
+
+.user-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+/* ── Body ──────────────────────────────────────────────── */
+.user-card__id {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 350;
+    color: var(--ink);
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.user-card__username {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 350;
+    color: var(--ink);
+    display: flex;
+    flex: 1.25;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.user_card__is-superuser {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 350;
+    color: var(--ink);
+    display: flex;
+    flex: 1.5;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+.user-card__action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  transition: all var(--transition-fast);
+}
+
+
+.user-card__action-btn--delete {
+  color: var(--rust);
+  background: #FDECEA;
+}
+
+.dog-card__action-btn--delete:hover {
+  background: var(--rust);
+  color: white;
+}

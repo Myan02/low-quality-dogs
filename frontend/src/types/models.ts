@@ -34,6 +34,14 @@ export interface User {
     is_superuser: boolean;
 }
 
+/**
+ * User fetch params
+ */
+export interface UserListParams {
+    offset: number;     // page number
+    limit: number;
+}
+
 // ----- DOG TYPES -----
 
 /**

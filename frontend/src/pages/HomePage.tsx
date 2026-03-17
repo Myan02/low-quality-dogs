@@ -18,6 +18,7 @@ import DogCard from '../components/DogCard';
 import UploadDogModal from '../components/UploadDogModal';
 import EditDogModal from '../components/EditDogModal';
 import DeleteConfirmModal from '../components/DeleteConfirmModal';
+import DisplayUsersModal from '../components/DisplayUsersModal';
 
 import { useDogs, useSearchDogs } from '../hooks/useDogs';
 import { useAuth } from '../context/AuthContext';
@@ -33,10 +34,11 @@ type ModalState =
     | null
     | { type: 'upload' }
     | { type: 'edit'; dog: Dog }
-    | { type: 'delete'; dog: Dog };
+    | { type: 'delete'; dog: Dog }
+    | { type: 'displayUsers' };
 
 export default function HomePage() {
-    const { isAuthenticated } = useAuth();
+    const { user, isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
     // Dog feed + pagination
@@ -71,6 +73,15 @@ export default function HomePage() {
         setRefreshKey(k => k + 1)
     }
 
+    // Clicking "Display Users" when not logged in redirects to login
+    function handleDisplayUsersClick() {
+        if ((!isAuthenticated) || (!user?.is_superuser)) {
+            navigate('/login')
+            return;
+        }
+        setModal({ type: 'displayUsers' });
+    }
+
     // Clicking "Upload Dog" when not logged in redirects to login
     function handleUploadClick() {
         if (!isAuthenticated) {
@@ -93,15 +104,24 @@ export default function HomePage() {
                             Share a dog. See it in low quality. Or actually share any picture it's fine.
                         </p>
                     </div>
-                    {isAuthenticated && (
-                        <button
-                            className="btn btn--primary"
-                            onClick={handleUploadClick}
-                            style={{ alignSelf: 'flex-start' }}
-                        >
-                            + Upload Your Dog
-                        </button>
-                    )}
+                    <div className='home-page__buttons' style={{ alignSelf: 'flex-start' }}>
+                        {isAuthenticated && user?.is_superuser && (
+                            <button
+                                className="btn btn--primary"
+                                onClick={handleDisplayUsersClick}
+                            >
+                                Display Users
+                            </button>
+                        )}
+                        {isAuthenticated && (
+                            <button
+                                className="btn btn--primary"
+                                onClick={handleUploadClick}
+                            >
+                                + Upload Your Dog
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {/* ── Search bar ────────────────────────────────── */}
@@ -221,6 +241,14 @@ export default function HomePage() {
             {modal?.type === 'delete' && (
                 <DeleteConfirmModal
                     dog={modal.dog}
+                    kind='Dog'
+                    onClose={() => setModal(null)}
+                    onSuccess={handleSuccess}
+                />
+            )}
+
+            {modal?.type === 'displayUsers' && (
+                <DisplayUsersModal
                     onClose={() => setModal(null)}
                     onSuccess={handleSuccess}
                 />

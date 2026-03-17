@@ -138,7 +138,7 @@ async def GetAllUsers(
     current_user: Annotated[models.UserReturn, Depends(get_current_user)],
     offset: Annotated[int, Query(title="Page Offser", description="Number of pages to show", ge=0)],
     limit: Annotated[int, Query(title="User Limit", description="Put a limit on number of users to return", ge=1, le=100)] = 10,
-):
+) -> Any:
     # Check if user logged in is a super user
     if not current_user.is_superuser:
         raise HTTPException(
@@ -161,7 +161,42 @@ async def GetAllUsers(
             detail=f"Something went wrong on our end, error: {e}"
         )
     
-    return [dict(user) for user in users]
+    return [models.UserReturnBasic(**dict(user)) for user in users]
+
+"""
+# This endpoint will retrieve users by matching name
+"""
+@router.get("/{username}", response_model=list[models.UserReturnBasic])
+async def GetUserByUsername(
+    current_user: Annotated[models.UserReturn, Depends(get_current_user)],
+    username: Annotated[str, Path(title="Fetch Users by name", description="Returns list of users by matching username")]
+) -> Any:
+    # Check if user logged in is a super user
+    if not current_user.is_superuser:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Unauthorized request, permission denied."
+        )
+    
+    try:
+        with db.db_session() as conn:
+            users = conn.execute(
+                queries.GetUserByUsername(), {"username": username}
+            ).fetchall()
+    
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail=f"Something went wrong on our end, error: {e}"
+        )
+
+    if not users:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="This user does not exist."
+        )
+    
+    return [models.UserReturnBasic(**dict(user)) for user in users]
     
 
 """

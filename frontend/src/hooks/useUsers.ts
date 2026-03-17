@@ -1,19 +1,19 @@
 /**
- * hooks/useDogs.ts
+ * hooks/useUsers.ts
  * 
  * Custom hook to reuse stateful component logic
  * 
- * useDogs - fetches a page of dogs from GET /dogs
- * useSearchDogs - fetches dogs by name from GET /dogs/name/:name
+ * useUsers - fetches a page of users from GET /auth/
+ * useSearchUsers - fetches users by name from GET /auth/user/:user
  */
 
 import { useState, useEffect, useCallback } from "react";
-import { getAllDogs, getDogsByName } from "../api/dogs";
-import type { Dog } from "../types/models";
+import { getAllUsers, getUsersByUsername } from "../api/auth";
+import type { User } from "../types/models";
 
-// ----- useDogs -----
-interface UseDogsReturn {
-    dogs: Dog[],
+// ----- useUsers -----
+interface UseUsersReturn {
+    users: User[];
     loading: boolean;
     error: string | null;
     page: number;
@@ -22,38 +22,37 @@ interface UseDogsReturn {
     hasMore: boolean;
 }
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 12
 
-export function useDogs():  UseDogsReturn {
-    const [dogs, setDogs] = useState<Dog[]>([]);
+export function useUsers(): UseUsersReturn {
+    const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [page, setPage] = useState<number>(0);
-    const [hasMore, setHasMore] = useState(true);
+    const [hasMore, setHasMore] = useState<boolean>(true);
 
-    const fetchDogs = useCallback(async () => {
+    const fetchUsers = useCallback(async () => {
         setLoading(true);
         setError(null);
 
         try {
-            const results = await getAllDogs({ offset: page, limit: PAGE_SIZE });
-            setDogs(results);
+            const results = await getAllUsers({ offset: page, limit: PAGE_SIZE });
+            setUsers(results);
             setHasMore(results.length === PAGE_SIZE);
         } catch {
-            setError('Server error, failed to load dogs.');
+            setError('Server error, failed to load users.');
         } finally {
             setLoading(false);
         }
     }, [page]);
 
-    useEffect(() => { fetchDogs(); }, [fetchDogs]);
+    useEffect(() => { fetchUsers(); }, [fetchUsers]);
 
-    return { dogs, loading, error, page, setPage, refresh: fetchDogs, hasMore };
+    return { users, loading, error, page, setPage, refresh: fetchUsers, hasMore };
 }
 
-// ----- useSearchDogs -----
-interface UseSearchDogsReturn {
-    results: Dog[];
+interface UseSearchUsersReturn {
+    results: User[];
     loading: boolean;
     error: string | null;
     search: (name: string) => void;
@@ -61,23 +60,23 @@ interface UseSearchDogsReturn {
     clear: () => void;
 }
 
-export function useSearchDogs(): UseSearchDogsReturn {
-    const [results, setResults] = useState<Dog[]>([]);
+export function useSearchUsers(): UseSearchUsersReturn {
+    const [results, setResults] = useState<User[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [query, setQuery] = useState<string>('');
 
-    const search = useCallback(async (name: string) => {
-        if (!name.trim()) return;
-        setQuery(name);
+    const search = useCallback(async (username: string) => {
+        if (!username.trim()) return;
+        setQuery(username);
         setLoading(true);
         setError(null);
 
         try {
-            const data = await getDogsByName(name);
+            const data = await getUsersByUsername(username);
             setResults(data);
         } catch {
-            setError(`No dogs found that contain the name "${name}"`);
+            setError(`No users found that contain the username ${username}`);
             setResults([]);
         } finally {
             setLoading(false);
