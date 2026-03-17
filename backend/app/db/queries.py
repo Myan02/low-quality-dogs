@@ -117,6 +117,17 @@ def GetUserByUsername() -> str:
 
     return query
 
+def GetAllUsers() -> str:
+    query = """
+        SELECT id, username, is_active, is_superuser
+        FROM Users
+        WHERE is_superuser = 0
+        ORDER BY created_at DESC
+        LIMIT :limit OFFSET :offset;
+    """
+
+    return query
+
 def DeleteUserById() -> str:
     query = """
         DELETE FROM Users

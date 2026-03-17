@@ -1,7 +1,7 @@
 from datetime import timedelta
 from typing import Annotated, Any
 
-from fastapi import APIRouter, HTTPException, Depends, status, Form, Path
+from fastapi import APIRouter, HTTPException, Depends, status, Form, Path, Query
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import jwt
 from jwt.exceptions import InvalidTokenError
@@ -130,6 +130,41 @@ async def GetMe(current_user: Annotated[models.UserReturn, Depends(get_current_u
     return current_user
 
 """
+# This endpoing retrieves all users
+# Must be superuser
+# """
+@router.get("/", response_model=list[models.UserReturnBasic])
+async def GetAllUsers(
+    current_user: Annotated[models.UserReturn, Depends(get_current_user)],
+    offset: Annotated[int, Query(title="Page Offser", description="Number of pages to show", ge=0)],
+    limit: Annotated[int, Query(title="User Limit", description="Put a limit on number of users to return", ge=1, le=100)] = 10,
+):
+    # Check if user logged in is a super user
+    if not current_user.is_superuser:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Unauthorized request, permission denied."
+        )
+    
+    try:
+        with db.db_session() as conn:
+            users = conn.execute(
+                queries.GetAllUsers(), {
+                    "offset": offset * limit,
+                    "limit": limit,
+                }
+            ).fetchall()
+    
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail=f"Something went wrong on our end, error: {e}"
+        )
+    
+    return [dict(user) for user in users]
+    
+
+"""
 # This endpoint will delete a user
 # Can only be used by a superuser
 """
@@ -143,7 +178,7 @@ async def DeleteUser(
     if not current_user.is_superuser:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Anauthorized request, permission denied."
+            detail="Unauthorized request, permission denied."
         )
     
     # Search user to make sure they exist

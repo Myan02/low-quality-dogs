@@ -50,6 +50,11 @@ class UserReturn(UserBase):
     hashed_password: Annotated[str, Field(title="User hashed password", description="Hashed password for user", min_length=8, max_length=128)]
     created_at: Annotated[datetime, Field(title="Timestamp of user account creation")]
 
+class UserReturnBasic(UserBase):
+    id: Annotated[int, Field(title="User ID", description="ID of the user")]
+    is_active: Annotated[bool, Field(title="User activity", description="Status of user account")] = True
+    is_superuser: Annotated[bool, Field(title="Admin Privelege", description="User admin privelege")] = False
+
 
 """
 # SECURITY MODELS
