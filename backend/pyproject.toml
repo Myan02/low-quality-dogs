@@ -1,14 +1,15 @@
 [project]
-name = "low quality dogs"
+name = "low-quality-dogs"
 version = "0.1.0"
 description = "A web app backend about low quality dogs!"
 readme = "README.md"
-requires-python = "==3.14"
+requires-python = ">=3.14"
 dependencies = [
-    "fastapi[standard]==0.129.0",
-    "pillow==12.1.1",
-    "pwdlib[argon2]==0.3.0",
-    "pyjwt==2.11.0",
-    "python-dotenv==1.2.1",
-    "python-multipart==0.0.22",
+    "fastapi[standard]>=0.129.0",
+    "pillow>=12.1.1",
+    "pwdlib[argon2]>=0.3.0",
+    "pyjwt>=2.11.0",
+    "pytest>=9.0.2",
+    "python-dotenv>=1.2.1",
+    "python-multipart>=0.0.22",
 ]

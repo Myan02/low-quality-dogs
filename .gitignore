@@ -16,6 +16,9 @@ static/
 # SQLite Database
 tables.db
 
+# PyTest Cache
+.pytest_cache
+
 # Logs
 logs
 *.log

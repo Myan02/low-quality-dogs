@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.testclient import TestClient
 from pathlib import Path
 
 from app.api import dogs, health, auth
