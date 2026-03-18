@@ -17,19 +17,20 @@ interface DogCardProps {
     onDelete: (dog: Dog) => void;
 }
 
-// backend stores images as a dir path like "static/images/elster_1.jpeg"
-// this function turns those paths into a url the browser can load
+/* backend stores images as a dir path like "static/images/elster_1.jpeg"
+   this function turns those paths into a url the browser can load */
 function resolveImageUrl(imagePath: string | null): string | null {
     if (!imagePath) return null;
     if (imagePath.startsWith('http')) return imagePath;
 
-    // Extract just the filename (e.g. "elster_2.jpeg") regardless of
-    // what directory prefix the backend stored, then serve via /images/
+    // Extract just the filename (e.g. "elster_2.jpeg")
     const normalized = imagePath.replace(/\\/g, '/');
-    const filename = normalized.split('/').pop();
+    const [pathPart, queryPart] = normalized.split('?');
+    const filename = pathPart.split('/').pop();
     if (!filename) return null;
 
-    return `/images/${filename}`;
+    const query = queryPart ? `?${queryPart}` : '';
+    return `/images/${filename}${query}`;
 }
 
 export default function DogCard({ dog, onEdit, onDelete }: DogCardProps) {

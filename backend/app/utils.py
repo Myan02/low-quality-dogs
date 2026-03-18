@@ -18,6 +18,10 @@ async def CompressImage(id: int, name: str, image: UploadFile) -> dict:
     try:
         img_path = DirPath(f"{Directories.LOCAL_IMAGE_DIR}/{name}_{id}.{Settings.IMG_FORMAT.lower()}")
 
+        # delete image if it exists
+        if img_path.exists():
+            img_path.unlink()
+
         # compress image and save to directory at lower quality
         image_bytes = await image.read()
         with Image.open(BytesIO(image_bytes)) as img:

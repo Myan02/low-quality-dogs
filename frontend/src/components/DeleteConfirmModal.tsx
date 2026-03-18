@@ -22,6 +22,7 @@ interface Props {
 }
 
 export default function DeleteConfirmModal({ dog, user, kind, onClose, onSuccess }: Props) {
+
     /* ── States ────────────────────────────────── */
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);

@@ -23,7 +23,7 @@ interface Props {
     onSuccess: () => void;
 }
 
-export default function DeleteUsersModal({ onClose }: Props) {
+export default function DisplayUsersModal({ onClose }: Props) {
 
     /* ── States ────────────────────────────────── */
     const [modal, setModal] = useState<ModalState>(null);

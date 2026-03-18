@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from typing import Annotated, Any
 from pathlib import Path as DirPath
 
@@ -52,11 +53,12 @@ async def UploadDog(
         # returns a dict if successfull or raise HTTP exception
         await CompressImage(id=dog.id, name=dog.name, image=image)
 
-        # update the db entry with the proper image url
+        # update the db entry with the proper image url and a current timestamp
+        t = int(datetime.now(timezone.utc).timestamp())
         with db.db_session() as conn:
             updated_record = conn.execute(
                 queries.UpdateImageUrl(), {
-                    "image_url": f"{Directories.LOCAL_IMAGE_DIR}/{dog.name}_{dog.id}.{Settings.IMG_FORMAT.lower()}",
+                    "image_url": f"{dog.name}_{dog.id}.{Settings.IMG_FORMAT.lower()}?t={t}",
                     "id": dog.id,
                 }
             ).fetchone()
@@ -221,14 +223,25 @@ async def EditDog(
                         "description": description,
                     }
                 ).fetchone()
-        
+
         dog = models.DogReturn(**dict(row))
 
         # compress new uploaded image and replace old image
         if image:
             await CompressImage(id=id, name=dog.name, image=image)
 
-    
+            # update the db entry with the proper image url and current timestamp
+            t = int(datetime.now(timezone.utc).timestamp())
+            with db.db_session() as conn:
+                updated_record = conn.execute(
+                    queries.UpdateImageUrl(), {
+                        "image_url": f"{dog.name}_{id}.{Settings.IMG_FORMAT.lower()}?t={t}",
+                        "id": id,
+                    }
+                ).fetchone()
+
+            dog.image_url = dict(updated_record)["image_url"]
+
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
