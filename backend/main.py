@@ -23,8 +23,9 @@ def InitApp() -> FastAPI:
     # create db if it doesn't exist
     DB_PATH = Path(Directories.DB_DIR/Directories.DB_NAME)
 
-    if not DB_PATH.exists():
-        DB_PATH.touch(mode=0o644)
+    if not Directories.DB_DIR.exists():
+        Directories.DB_DIR.mkdir(mode=0o755)
+        DB_PATH.touch(mode=0o755)
     
     # create app instance
     app = FastAPI(

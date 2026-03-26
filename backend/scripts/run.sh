@@ -15,10 +15,16 @@ echo "${BACKEND_DIR}"
 # Pre-create host directories with correct ownership if they don't exist
 # so the nonroot user (UID 999) can write to them at runtime
 mkdir -p "${PROJECT_ROOT}/static/images"
+mkdir -p "${PROJECT_ROOT}/db"
 
 if [ ! "$(stat -c '%u' "${PROJECT_ROOT}/static" 2>/dev/null)" = "999" ]; then
   echo "Setting ownership of static/ to nonroot (UID 999)..."
   sudo chown -R 999:999 "${PROJECT_ROOT}/static"
+fi
+
+if [ ! "$(stat -c '%u' "${PROJECT_ROOT}/db" 2>/dev/null)" = "999" ]; then
+  echo "Setting ownership of db/ to nonroot (UID 999)..."
+  sudo chown -R 999:999 "${PROJECT_ROOT}/db"
 fi
 
 # Stop and remove any existing container with the same name
@@ -35,7 +41,7 @@ docker run \
   --restart unless-stopped \
   --env-file .env \
   --publish 8000:8000 \
-  --volume "${BACKEND_DIR}/app/db:/app/app/db" \
+  --volume "${PROJECT_ROOT}/db:/db" \
   --volume "${PROJECT_ROOT}/static:/static" \
   "${IMAGE_NAME}:${IMAGE_TAG}"
 
