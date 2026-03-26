@@ -14,6 +14,7 @@ load_dotenv()
 class Settings():
     APP = os.getenv("APP")
     APP_TITLE = os.getenv("APP_TITLE")
+    API_VERSION = os.getenv("API_VERSION")
     PORT = int(os.getenv("PORT"))
     HOST = os.getenv("HOST")
     WORKERS = int(os.getenv("WORKERS"))

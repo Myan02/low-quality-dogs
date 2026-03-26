@@ -14,7 +14,7 @@ wheels/
 static/
 
 # SQLite Database
-db/
+db
 tables.db
 
 # PyTest Cache

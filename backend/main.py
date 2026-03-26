@@ -29,7 +29,8 @@ def InitApp() -> FastAPI:
     
     # create app instance
     app = FastAPI(
-        title=Settings.APP_TITLE
+        title=Settings.APP_TITLE,
+        root_path=f"/{Settings.API_VERSION}"
     )
 
     app.mount(

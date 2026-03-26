@@ -8,7 +8,7 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-    baseURL: '/',   // Vite proxy will forward /dogs and /auth to backend
+    baseURL: '/v1/',   // Vite proxy will forward /dogs and /auth to backend
 });
 
 // ----- REQUEST INTERCEPTOR -----
