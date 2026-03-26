@@ -1,0 +1,53 @@
+# official uv image with python 3.14
+FROM ghcr.io/astral-sh/uv:python3.14-bookworm-slim AS builder
+
+# UV_COMPILE_BYTECODE: compiles all .py files into .pyc bytecode for faster execution
+# UV_LINK_MODE: copies files directly to the virtual env instead of creating symlinks
+ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
+
+# prevent uv from downloading its own python interpretor, we use the one that comes with the uv image
+ENV UV_PYTHON_DOWNLOADS=0
+
+# set the container's working directory
+WORKDIR /backend
+
+# install dependencies
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --locked --no-install-project
+
+# copy logic to container directory
+COPY . /backend
+
+# full project install
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --locked --no-dev
+
+# official python image, no uv
+FROM python:3.14-slim-bookworm
+
+# set the env locations and flags
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \ 
+    PATH="/backend/.venv/bin:$PATH"
+
+# create a nonroot container group and user for least permissions
+RUN groupadd --system --gid 999 nonroot \
+    && useradd --system --gid 999 --uid 999 --create-home nonroot
+
+# copy everything from the builder stage to this final image
+COPY --from=builder --chown=nonroot:nonroot /backend /backend
+
+# switch to the nonroot user
+USER nonroot
+
+# set the working directory for the final image
+WORKDIR /backend
+
+# container listens on port 8000
+EXPOSE 8000
+
+# run the webserver command
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+

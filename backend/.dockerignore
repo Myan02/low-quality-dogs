@@ -1,0 +1,47 @@
+# version control
+.git
+.gitignore
+
+# python files
+__pycache__
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# uv files
+.uv/
+
+# database and db files
+app/db/tables.db
+app/db/tables.db-shm
+app/db/tables.db-wal
+
+# virtual environments
+.venv
+venv
+
+# builds and logs
+dist/
+build/
+*.log
+
+# env files and vars
+.env
+.env.*
+
+# tests and scripts
+tests/
+tests
+
+# docker files
+Dockerfile
+.dockerignore
+
+# frontend (even though its in a seperate directory)
+frontend/

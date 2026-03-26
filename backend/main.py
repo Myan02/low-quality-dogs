@@ -9,6 +9,8 @@ from app.config import Settings, Directories
 from app.db import db, queries
 from app.utils import get_password_hash
 
+import uvicorn
+
 """
 # Initialize FastApi app
 """
@@ -16,13 +18,13 @@ def InitApp() -> FastAPI:
 
     # create and initialize dogs directory
     if not Directories.LOCAL_IMAGE_DIR.exists():
-        Directories.LOCAL_IMAGE_DIR.mkdir(parents=True)
+        Directories.LOCAL_IMAGE_DIR.mkdir(parents=True, mode=0o755)
     
     # create db if it doesn't exist
     DB_PATH = Path(Directories.DB_DIR/Directories.DB_NAME)
 
     if not DB_PATH.exists():
-        DB_PATH.touch()
+        DB_PATH.touch(mode=0o644)
     
     # create app instance
     app = FastAPI(
@@ -80,8 +82,6 @@ app = InitApp()
 # Start server
 """
 if __name__ == "__main__":
-    import uvicorn
-
     uvicorn.run(
         app=Settings.APP,
         host=Settings.HOST,
