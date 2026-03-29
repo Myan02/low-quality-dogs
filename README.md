@@ -3,7 +3,7 @@
 
   <h1>Low Quality Dogs</h1>
 
-  <a href="https://low-quality-dogs.org">
+  <a href="https://low-quality-dogs.org" target="_blank">
     <img src="frontend/public/manny_favicon.png" alt="manny logo" width="256" height="256">
   </a>
   
