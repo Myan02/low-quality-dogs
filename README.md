@@ -3,7 +3,7 @@
 
   <h1>Low Quality Dogs</h1>
 
-  <a href="https://low-quality-dogs.org">
+  <a href="https://low-quality-dogs.org" target="_blank">
     <img src="frontend/public/manny_favicon.png" alt="manny logo" width="256" height="256">
   </a>
   
@@ -75,7 +75,7 @@ Fill in the info and pick a file. Boom all done!
 
 To edit or delete your images, click on the edit or delete icons on the dog cards as shown below:
 
-<!-- Add edit and delete image here -->
+![upload dog](./frontend/public/2026-03-29-143759_hyprshot.png)
 
 *Note: Deleting your photos is permenant. I do not save any copies of anything and you will not be able to retrieve it afterwards.*
 

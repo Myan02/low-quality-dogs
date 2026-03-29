@@ -89,7 +89,7 @@ def register_user(user_data: Annotated[models.UserCreate, Form()]) -> Any:
         # Check db if user exists
         with db.db_session() as conn:
             user = conn.execute(
-                queries.GetUserByUsername(), {"username": user_data.username}
+                queries.GetUserByUsernameDistinct(), {"username": user_data.username}
             ).fetchone()
 
     except Exception as e:
