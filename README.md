@@ -23,8 +23,8 @@
 ## :mag: Table of Contents
 
 - [Project Details](#envelope-project-details)
-- [Getting Started Locally](#toolbox-getting-started)
-- [Contributions](#whale2-docker-and-automation)
+- [Getting Started Locally](#toolbox-getting-started-locally)
+- [Contributions](#desktop_computer-contributions)
 - [License](#warning-license)
 - [Contact](#speech_balloon-contact)
 
@@ -37,11 +37,23 @@
 Low quality dogs is a web app made for pet owners to share images of their pets :dog:. Except when you upload an image, it shows up in super low quality. I truly made this becuase I thought it was really 
 funny and I had fun making it! The app is made with simplicity and scalability in mind. You only need one account and that's it. No email. No password recovery. Just a simple username and a password. 
 
+### Built With
+
+![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white)
+![uv](https://img.shields.io/badge/uv-%23DE5FE9.svg?style=for-the-badge&logo=uv&logoColor=white)
+![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
+![Pytest](https://img.shields.io/badge/pytest-%23ffffff.svg?style=for-the-badge&logo=pytest&logoColor=2f9fe3)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?style=for-the-badge&logo=nginx&logoColor=white)
+![TraefikProxy](https://img.shields.io/badge/Traefik-%252300314b.svg?style=for-the-badge&logo=traefikproxy&logoColor=white)
+
 ### Using the app
 
 To access low quality dogs, click on this url:
 
-:point_right: https://low-quality-dogs.org
+:point_right: https://low-quality-dogs.org :point_left:
 
 Pretty quick right :sunglasses:. You can view everyones uploaded images and search by pet name if your friend uploaded their pet. 
 
@@ -67,8 +79,6 @@ To edit or delete your images, click on the edit or delete icons on the dog card
 
 *Note: Deleting your photos is permenant. I do not save any copies of anything and you will not be able to retrieve it afterwards.*
 
-
-
 <!-- Usage -->
 ## :toolbox: Getting Started Locally
 
@@ -87,8 +97,6 @@ Some tips to help you with the .env file:
 - I keep IMG_SIZE to 64 but you can set it to whatever you want (I also only allow .png, .jpg, and .webp formats for compression)
 - The image and db paths located in the projects root directory, not in the backend directory
 
-<br>
-
 ### Run Locally
 
 I used *uv* as my preferred python package manager as it is super duper fast. Therefore, there is no requirements.txt file to install your dependencies. I recommend at least trying uv by creating a virtual environment, installing uv with pip, and installing the rest of your app with:
@@ -105,47 +113,19 @@ For the frontend, you only need to have node.js installed along with npm. Run:
 npm i
 ```
 
-in the frontend directory to install all dependencies.
+in the frontend directory to install all dependencies. This app is made with react ts making it really easy to edit components. All routing is handled by an Axios instance and provided through an authentication context to all components. All communication between the frontend and backend is handled by the vite proxy as well as nginx when running in a docker container.
 
+To startup the app with docker containers, run:
 
-
-<!-- Automating with Docker -->
-## :whale2: Docker and Automation
-
-### Building with Docker
-
-To containerize the project, make sure you have docker installed on your device. For more support, refer to the official docs: https://docs.docker.com/desktop/.
-Cd into the main directory:
-```bash
-cd Daily-Update
+```
+docker compose up -d --build
 ```
 
-Make sure you have a dockerfile, .dockerignore, requirements.txt, and .env file all in the directory. Run docker build:
-```bash
-docker build -t daily-update:latest .
-```
+to build the images and run the services. A *Traefik* image is used to facilitate services.
 
-To start the container and run the program, use docker run:
-```bash
-docker run --rm --env-file .env daily-update:latest
-```
+## :desktop_computer: Contributions
 
-*Note:* the container will run and close when the program terminates making it portable and easily managable. 
-
-### Automation
-
-If you have an unused device, like a raspberry pi, you can save the docker image locally and run the container on a schedule using your os's scheduling tools.
-There are many scheduling services; I use Cron for Linux machines; Launchd is native to Mac and preferred over Cron; and Task Scheduler on Windows which uses a GUI. 
-
-```bash
-# To open crontab in linux
-crontab -e
-```
-
-```bash
-# Add this to your crontab to run the container every day at 9 am and log all errors in cron.log
-0 9 * * * docker run --rm --env-file /home/{your home directory}/daily-update/.env daily-update:latest >> /home/{your home directory}/daily-update/cron.log 2>&1
-```
+Do you want to make low quality dogs better!?!? Thank you! This project is completely open source so look through the issue tickets and open a pull request. I'll approve and reject as required.
 
 ## :warning: License
 
