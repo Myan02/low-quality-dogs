@@ -43,7 +43,7 @@ To access low quality dogs, click on this url:
 
 :point_right: https://low-quality-dogs.org
 
-Pretty quick right :sunglasses:. You can view everyones uploaded images and search by name if your friend uploaded their pet.
+Pretty quick right :sunglasses:. You can view everyones uploaded images and search by pet name if your friend uploaded their pet. 
 
 
 <!-- Usage -->
