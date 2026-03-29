@@ -45,6 +45,22 @@ To access low quality dogs, click on this url:
 
 Pretty quick right :sunglasses:. You can view everyones uploaded images and search by pet name if your friend uploaded their pet. 
 
+![main page](./frontend/public/2026-03-29-142610_hyprshot.png)
+
+Want to upload your own pets? Make an account! No passwords are saved on the backend nor do I want to know what passwords you use (I know you rotate between three passwords for everything :wink:).
+
+![main page](./frontend/public/2026-03-29-142633_hyprshot.png)
+
+Once you log in, select:
+
+```
++ Upload Dog
+```
+
+Fill in the info and pick a file. Boom all done!
+
+
+
 
 <!-- Usage -->
 ## :toolbox: Getting Started
