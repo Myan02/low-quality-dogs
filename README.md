@@ -49,7 +49,7 @@ Pretty quick right :sunglasses:. You can view everyones uploaded images and sear
 
 Want to upload your own pets? Make an account! No passwords are saved on the backend nor do I want to know what passwords you use (I know you rotate between three passwords for everything :wink:).
 
-![main page](./frontend/public/2026-03-29-142633_hyprshot.png)
+![sign up](./frontend/public/2026-03-29-142633_hyprshot.png)
 
 Once you log in, select:
 
@@ -59,63 +59,55 @@ Once you log in, select:
 
 Fill in the info and pick a file. Boom all done!
 
+![upload dog](./frontend/public/2026-03-29-143505_hyprshot.png)
+
+To edit or delete your images, click on the edit or delete icons on the dog cards as shown below:
+
+<!-- Add edit and delete image here -->
+
+*Note: Deleting your photos is permenant. I do not save any copies of anything and you will not be able to retrieve it afterwards.*
 
 
 
 <!-- Usage -->
-## :toolbox: Getting Started
+## :toolbox: Getting Started Locally
 
-### Installing Files
+### Forking the Repository
 
-Clone the repository and cd into the main directory
-
-```bash
-git clone https://github.com/Myan02/Daily-Update.git
-cd Daily-Update
-```
-<br>
-
-**Optional but highly recommend:** create a virtual environment in the app directory
-
-```powershell
-# Powershell
-python -m venv app\venv
-app\venv\Scripts\activate
-```
-
-```bash
-# Linux/Mac
-python -m venv app/venv
-source ./app/venv/bin/activate
-```
-<br>
-
-Install required packages
-
-```bash
-pip install -r requirements.txt
-```
+To work on your own version of **Low Quality Dogs**, just fork the repository and start working on it. Keep reading this chapter to find out how to configure your setup.
 
 ### Configurations
 
-Environmental variables (**NEVER SHARE OR COMMIT API KEYS TO YOUR REPOSITORY**):
-- Rename *.env_template* to *.env*
-- Fill in variables with your personal information. E.G. API_URL_BASE_WEATHER=https://api.open-meteo.com/v1/forecast
+Environmental variables (**NEVER SHARE OR COMMIT THIS FILE TO YOUR REPOSITORY**):
+- In the backend directory, create a .env file
+- To configure your env variables, refer to the *config.py* file located in the inner app directory
+
+Some tips to help you with the .env file:
+- Keep APP_RELOAD to 1 when testing locally
+- I keep IMG_SIZE to 64 but you can set it to whatever you want (I also only allow .png, .jpg, and .webp formats for compression)
+- The image and db paths located in the projects root directory, not in the backend directory
 
 <br>
 
-Other variables:
-- Edit *Daily-Update/app/config.py*
-- Update *latitude*, *longitude*, and *timezone* at the bottom of the file with info of your choice
-
 ### Run Locally
 
-Run the main.py file!
+I used *uv* as my preferred python package manager as it is super duper fast. Therefore, there is no requirements.txt file to install your dependencies. I recommend at least trying uv by creating a virtual environment, installing uv with pip, and installing the rest of your app with:
 
-```bash
-cd app
-python main.py
 ```
+uv sync
+```
+
+if you have uv installed natively on your machine, make the venv with uv in the backend directory and sync up your dependencies. To run the backend locally, I would suggest simply running the *main.py* file from the backend directory. It will create and initialize all volumes, tables, and the uvicorn web server. To test prod, build the backend with the *build.sh* script to create a docker image of the backend and run the container with *run.sh*.
+
+For the frontend, you only need to have node.js installed along with npm. Run:
+
+```
+npm i
+```
+
+in the frontend directory to install all dependencies.
+
+
 
 <!-- Automating with Docker -->
 ## :whale2: Docker and Automation
