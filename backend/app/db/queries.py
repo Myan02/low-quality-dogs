@@ -108,6 +108,15 @@ def GetUserById() -> str:
 
     return query
 
+def GetUserByUsernameDistinct() -> str:
+    query = """
+        SELECT *
+        FROM Users
+        WHERE username = :username;
+    """
+
+    return query
+
 def GetUserByUsername() -> str:
     query = """
         SELECT *
