@@ -1,5 +1,5 @@
 # official uv image with python 3.15.1
-FROM ghcr.io/astral-sh/uv:python3.15.1-bookworm-slim AS builder
+FROM ghcr.io/astral-sh/uv:python3.15-trixie-slim AS builder
 
 # UV_COMPILE_BYTECODE: compiles all .py files into .pyc bytecode for faster execution
 # UV_LINK_MODE: copies files directly to the virtual env instead of creating symlinks
@@ -25,7 +25,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev
 
 # official python image, no uv
-FROM python:3.15.1-slim-bookworm
+FROM python:3.15.1-slim-trixie
 
 # set the env locations and flags
 ENV PYTHONUNBUFFERED=1 \
