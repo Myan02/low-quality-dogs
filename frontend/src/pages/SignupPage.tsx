@@ -37,7 +37,7 @@ export default function SignupPage() {
         }
 
         if (password.length < 8) {
-            setError('Password must be at least 6 characters.');
+            setError('Password must be at least 8 characters.');
             return;
         }
 
@@ -105,6 +105,7 @@ export default function SignupPage() {
                             placeholder="••••••••"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            minLength={8}
                             required
                             autoComplete="new-password"
                         />
@@ -119,6 +120,7 @@ export default function SignupPage() {
                             placeholder="••••••••"
                             value={confirm}
                             onChange={(e) => setConfirm(e.target.value)}
+                            minLength={8}
                             required
                             autoComplete="new-password"
                         />
